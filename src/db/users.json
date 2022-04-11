@@ -1,0 +1,144 @@
+{
+  "users": [
+    {
+      "uid": "1",
+      "name": "Leanne Graham",
+      "username": "Bret",
+      "email": "Leonne.Graham@imail.com",
+      "image": "https://s3.amazonaws.com/uifaces/faces/twitter/kolage/128.jpg",
+      "password": "password",
+      "tabs": [
+        {
+          "tab_id": "1",
+          "tab_name": "Groceries",
+          "tasks": [
+            {
+              "task_id": "1",
+              "task_name": "Milk",
+              "task_description": "2%",
+              "task_done": false
+            },
+            {
+              "task_id": "2",
+              "task_name": "Bread",
+              "task_description": "Whole Wheat",
+              "task_done": false
+            },
+            {
+              "task_id": "3",
+              "task_name": "Eggs",
+              "task_description": "12",
+              "task_done": false
+            },
+            {
+              "task_id": "4",
+              "task_name": "Cheese",
+              "task_description": "Cheddar",
+              "task_done": false
+            },
+            {
+              "task_id": "5",
+              "task_name": "Butter",
+              "task_description": "",
+              "task_done": false
+            }
+          ]
+        },
+        {
+          "tab_id": "2",
+          "tab_name": "To Do",
+          "tasks": [
+            {
+              "task_id": "1",
+              "task_name": "Learn Angular",
+              "task_description": "",
+              "task_done": false
+            },
+            {
+              "task_id": "2",
+              "task_name": "Learn React",
+              "task_description": "",
+              "task_done": false
+            },
+            {
+              "task_id": "3",
+              "task_name": "Learn Vue",
+              "task_description": "",
+              "task_done": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "uid": "2",
+      "name": "Ervin Howell",
+      "username": "Antonette",
+      "email": "Ervin.Howell@futuremail.com",
+      "image": "https://s3.amazonaws.com/uifaces/faces/twitter/kolage/128.jpg",
+      "password": "password",
+      "tabs": [
+        {
+          "tab_id": "1",
+          "tab_name": "Groceries",
+          "tasks": [
+            {
+              "task_id": "1",
+              "task_name": "Milk",
+              "task_description": "2%",
+              "task_done": false
+            },
+            {
+              "task_id": "2",
+              "task_name": "Bread",
+              "task_description": "Whole Wheat",
+              "task_done": false
+            },
+            {
+              "task_id": "3",
+              "task_name": "Eggs",
+              "task_description": "12",
+              "task_done": false
+            },
+            {
+              "task_id": "4",
+              "task_name": "Cheese",
+              "task_description": "Cheddar",
+              "task_done": false
+            },
+            {
+              "task_id": "5",
+              "task_name": "Butter",
+              "task_description": "",
+              "task_done": false
+            }
+          ]
+        },
+        {
+          "tab_id": "2",
+          "tab_name": "To Do",
+          "tasks": [
+            {
+              "task_id": "1",
+              "task_name": "Learn Angular",
+              "task_description": "",
+              "task_done": false
+            },
+            {
+              "task_id": "2",
+              "task_name": "Learn React",
+              "task_description": "",
+              "task_done": false
+            },
+            {
+              "task_id": "3",
+              "task_name": "Learn Vue",
+              "task_description": "",
+              "task_done": false
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
