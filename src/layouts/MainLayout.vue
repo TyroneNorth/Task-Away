@@ -2,14 +2,7 @@
   <q-layout view="lHh Lpr lFf">
     <q-header q-ml-200>
       <q-toolbar>
-        <q-btn
-          flat
-          dense
-          round
-          icon="menu"
-          aria-label="Menu"
-          @click="toggleLeftDrawer"
-        />
+        <q-btn flat dense round icon="menu" aria-label="Menu" @click="toggleLeftDrawer" />
       </q-toolbar>
       <div class="q-px-lg q-pt-xl q-mb-md">
         <div class="text-h3">Task Away</div>
@@ -18,28 +11,20 @@
       <q-img src="../static/mountains.png" class="header-image absolute-top" />
     </q-header>
 
-    <q-drawer
-      v-model="leftDrawerOpen"
-      show-if-above
-      bordered
-      :width="250"
-      :breakpoint="600"
-    >
-      <q-scroll-area
-        style="
+    <q-drawer v-model="leftDrawerOpen" show-if-above bordered :width="250" :breakpoint="600">
+      <q-scroll-area style="
           height: calc(100% - 248px);
           margin-top: 248px;
           border-right: 1px solid #ddd;
-        "
-      >
+        ">
         <q-list padding>
-          <q-item v-if="!user" to="/signon" exact clickable v-ripple>
+          <q-item v-if="!user" to="/" exact clickable v-ripple>
             <q-item-section avatar>
               <q-icon name="list" />
             </q-item-section>
 
-            <q-item-section v-if="!user"> Login </q-item-section>
-            <q-item-section v-else> Tasks </q-item-section>
+            <q-item-section v-if="isAuthenticated"> Tasks </q-item-section>
+            <q-item-section v-else> Login </q-item-section>
           </q-item>
           <q-item v-else to="/tasks" exact clickable v-ripple>
             <q-item-section avatar>
@@ -67,13 +52,8 @@
           </q-item>
 
           <q-list bordered class="rounded-borders">
-            <q-expansion-item
-              expand-separator
-              icon="list"
-              label="Tasks"
-              caption="# of total combined tasks"
-              default-opened
-            >
+            <q-expansion-item expand-separator icon="list" label="Tasks" caption="# of total combined tasks"
+              default-opened>
               <q-list bordered separator>
                 <q-item clickable v-ripple>
                   <q-item-section>Task Category 1</q-item-section>
@@ -96,21 +76,14 @@
         </q-list>
       </q-scroll-area>
 
-      <q-img
-        class="absolute-top"
-        src="../static/mountains.svg"
-        style="height: 248px"
-      >
+      <q-img class="absolute-top" src="../static/mountains.svg" style="height: 248px">
         <div class="absolute-bottom bg-transparent">
           <q-avatar size="56px" class="q-mb-sm">
-            <img
-              src="https://cdn.quasar.dev/img/boy-avatar.png"
-              alt="user avatar icon/gravatar"
-            />
+            <img src="https://cdn.quasar.dev/img/boy-avatar.png" alt="user avatar icon/gravatar" />
           </q-avatar>
-          <div v-if="isAuthenticated" class="text-weight-bold">
-            {{ displayName }}
-            <div class="text-weight-regular">userTag</div>
+          <div v-if="stores.state.user" class="text-weight-bold">
+            {{ stores.state.user?.email?.toString() }}
+            <div class="text-weight-regular">@ {{ stores.state.user?.email?.toString() }}</div>
           </div>
           <div v-else class="text-weight-bold">
             Guest
@@ -134,17 +107,19 @@
 <script setup lang="ts">
 import { date } from 'quasar';
 import { ref } from 'vue';
+import stores from 'src/stores/auth/';
 
 import supabase from 'src/boot/supabase';
 
 const isAuthenticated = ref(false);
 
-const user = supabase.auth.user();
-const displayName = ref(user?.email);
+const user = supabase.auth.user()
+stores.state.user = user;
+//const displayName = stores.state.user?.email;
 
 supabase.auth.onAuthStateChange((event, session) => {
   console.log(event, session);
-  if (user) {
+  if (session !== null) {
     isAuthenticated.value = true;
   } else {
     isAuthenticated.value = false;
@@ -169,5 +144,10 @@ function toggleLeftDrawer() {
   z-index: -1;
   opacity: 0.2;
   filter: grayscale(100%);
+}
+
+q-page-container {
+  min-height: calc(100vh - 248px);
+  max-width: 50%;
 }
 </style>

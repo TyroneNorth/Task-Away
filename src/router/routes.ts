@@ -6,8 +6,16 @@ const routes: RouteRecordRaw[] = [
     component: () => import('layouts/MainLayout.vue'),
     children: [{ path: '/tasks', component: () => import('pages/Tasks.vue'), meta: { requiresAuth: true } },
     { path: '/help', component: () => import('pages/HelpPage.vue') },
-    { path: '/set', component: () => import('pages/SettingsPage.vue') },
-    { path: '', component: () => import('pages/IndexPage.vue') },],
+    { path: '/set', component: () => import('src/pages/auth/SettingsPage.vue'), meta: { requiresAuth: true } },
+    { path: '', component: () => import('src/pages/IndexPage.vue') },],
+
+
+  },
+
+  // Authentication
+  {
+    path: '/:beforeEnter(.*)*',
+    component: () => import('src/pages/IndexPage.vue'),
   },
 
   // Always leave this as last one,

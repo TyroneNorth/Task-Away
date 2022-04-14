@@ -9,12 +9,14 @@ const logOffProps = reactive({
 
 
 const logOff = async () => {
-  const { error } = await supabase.auth.signOut();
+  const { error } = await supabase.auth.signOut()
   if (error) {
     logOffProps.$q.notify({
       color: 'negative',
       message: error.message,
     });
+    console.log(error);
+    logOffProps.$router.push('');
   }
 };
 

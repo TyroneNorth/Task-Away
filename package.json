@@ -12,17 +12,23 @@
     "update-types": "npx openapi-typescript https://your-project.supabase.co/rest/v1/?apikey=your-anon-key --output types/database/index.ts"
   },
   "dependencies": {
+    "@js-temporal/polyfill": "^0.4.0",
     "@quasar/extras": "^1.0.0",
     "@supabase/supabase-js": "^1.33.3",
+    "dotenv": "^16.0.0",
     "firebase": "^9.6.10",
+    "marked": "^4.0.14",
     "pinia": "^2.0.11",
     "quasar": "^2.6.0",
+    "uuid": "^8.3.2",
     "vue": "^3.0.0",
-    "vue-router": "^4.0.0"
+    "vue-router": "^4.0.0",
+    "vue-simplemde": "^2.0.1"
   },
   "devDependencies": {
     "@quasar/app-vite": "^1.0.0-alpha.0",
     "@types/node": "^12.20.21",
+    "@types/uuid": "^8.3.4",
     "@typescript-eslint/eslint-plugin": "^5.10.0",
     "@typescript-eslint/parser": "^5.10.0",
     "autoprefixer": "^10.4.2",
