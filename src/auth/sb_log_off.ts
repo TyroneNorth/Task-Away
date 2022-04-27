@@ -1,23 +1,20 @@
 import supabase from 'src/boot/supabase';
-import { reactive } from 'vue';
-import { useRouter } from 'vue-router';
-import { useQuasar } from 'quasar';
-const logOffProps = reactive({
-  $router: useRouter(),
-  $q: useQuasar(),
-});
-
+import { Notify } from 'quasar';
 
 const logOff = async () => {
-  const { error } = await supabase.auth.signOut()
+  const { error } = await supabase.auth.signOut();
+  Notify.create({
+    message: 'Successfully logged out!',
+    color: 'positive',
+  });
+  console.log('User logged out successfully');
   if (error) {
-    logOffProps.$q.notify({
-      color: 'negative',
+    Notify.create({
       message: error.message,
+      color: 'negative',
     });
     console.log(error);
-    logOffProps.$router.push('');
   }
 };
 
-export { logOff, logOffProps };
+export { logOff };

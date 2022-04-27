@@ -18,22 +18,24 @@
           border-right: 1px solid #ddd;
         ">
         <q-list padding>
+
           <q-item v-if="!user" to="/" exact clickable v-ripple>
             <q-item-section avatar>
-              <q-icon name="list" />
+              <q-icon name="login" />
             </q-item-section>
 
-            <q-item-section v-if="isAuthenticated"> Tasks </q-item-section>
-            <q-item-section v-else> Login </q-item-section>
+            <q-item-section> Login </q-item-section>
           </q-item>
+
+
           <q-item v-else to="/tasks" exact clickable v-ripple>
             <q-item-section avatar>
-              <q-icon name="list" />
+              <q-icon name="task" />
             </q-item-section>
 
-            <q-item-section v-if="!user"> Login </q-item-section>
-            <q-item-section v-else> Tasks </q-item-section>
+            <q-item-section> Tasks </q-item-section>
           </q-item>
+
 
           <q-item to="/help" exact clickable v-ripple>
             <q-item-section avatar>
@@ -81,9 +83,9 @@
           <q-avatar size="56px" class="q-mb-sm">
             <img src="https://cdn.quasar.dev/img/boy-avatar.png" alt="user avatar icon/gravatar" />
           </q-avatar>
-          <div v-if="stores.state.user" class="text-weight-bold">
-            {{ stores.state.user?.email?.toString() }}
-            <div class="text-weight-regular">@ {{ stores.state.user?.email?.toString() }}</div>
+          <div v-if="user" class="text-weight-bold">
+            {{ user?.email }}
+            <div class="text-weight-regular">@ {{ user?.id }}</div>
           </div>
           <div v-else class="text-weight-bold">
             Guest
@@ -107,14 +109,14 @@
 <script setup lang="ts">
 import { date } from 'quasar';
 import { ref } from 'vue';
-import stores from 'src/stores/auth/';
+//import stores from 'src/stores/auth/';
 
 import supabase from 'src/boot/supabase';
 
 const isAuthenticated = ref(false);
 
-const user = supabase.auth.user()
-stores.state.user = user;
+const user = ref(supabase.auth.user());
+//stores.state.user = user;
 //const displayName = stores.state.user?.email;
 
 supabase.auth.onAuthStateChange((event, session) => {

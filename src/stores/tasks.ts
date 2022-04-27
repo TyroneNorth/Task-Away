@@ -1,91 +1,132 @@
-import supabase from 'src/boot/supabase'
+import { defineStore } from 'pinia';
+import supabase from 'src/boot/supabase';
+import { Tasks, PartialTasks } from 'src/components/models';
+import { ref } from 'vue';
 
-// Tasks Store
-export default {
-  namespaced: true,
-
-  state: {
-    user: supabase.auth.user(),
-    tasks: [
-      {
-        taskId: null,
-        taskTitle: null,
-        taskContent: null,
-        taskStatus: false
-      }
-    ],
-  },
+export const useTaskStore = defineStore('tasks', {
+  state: () => ({
+    /** @type {unknown[{}]} */
+    tasks: ref<Tasks[]>([]),
+    meta: {
+      totalCount: 0,
+    },
+  }),
 
   getters: {
-    user(state: { user: any }) {
-      return state.user;
-    },
-    getTasks(state: { tasks: any }) {
-      return state.tasks;
-    },
-    getTaskByTasks(state: { tasks: any }) {
-      return state.tasks.find((task: any) => task.taskId === state.tasks.taskId);
-    }
+    /**
+     * Retrieve all task for the signed in user
+     */
+    async fetchTasks() {
+      try {
+        const { data: tasks, error } = await supabase
+          .from('tasks')
+          .select('*')
+          .order('id');
 
+        if (error) {
+          console.log('error', error);
+          return;
+        }
+        // handle for when no tasks are returned
+        if (tasks === null) {
+          this.tasks = [];
+          return;
+        }
+        // store response to tasks
+        this.tasks = tasks;
+        console.log('got tasks!', tasks);
+        return tasks;
+      } catch (err) {
+        console.error('Error retrieving data from db', err);
+      }
+    },
+    /**
+     * Retrieve local store task id
+     */
   },
-
-
 
   actions: {
-    async createTask(context: any, payload: any) {
+    /**
+     *  Add a new tasks to supabase
+     */
+    async addTasks(task: Tasks) {
+      try {
+        const { data, error } = await supabase.from('tasks').insert(task);
 
-      const { error } = await supabase
-        .from('tasks')
-        .insert({
-          title: payload.title,
-          content: payload.content,
-        });
-      if (error) {
-        console.log('Error creating task ', + error);
-      }
-      else {
-        console.log('Task created');
+        if (error) {
+          alert(error.message);
+          console.error('There was an error inserting', error);
+        }
+        // store response to tasks
+        this.tasks.push({ ...task });
+        console.log('created a new tasks');
+        return data;
+      } catch (err) {
+        alert('Error');
+        console.error('Unknown problem inserting to db', err);
+        return null;
       }
     },
 
-    async updateTask(context: any, payload: any) {
-      const { error } = await supabase
-        .from('tasks')
-        .update({
-          title: payload.title,
-          content: payload.content,
-        })
-        .match({
-          id: payload.id,
-        });
-      if (error) {
-        console.log('Error updating task ', + error);
-      }
-      else {
-        console.log('Task updated');
+    /**
+     * Targets a specific task via its record id and updates the is_completed attribute.
+     */
+    async updateTaskCompletion(task: Tasks) {
+      try {
+        const { error } = await supabase
+          .from('tasks')
+          .update({ is_completed: !!task.is_completed })
+          .eq('id', task.id);
+
+        if (error) {
+          alert(error.message);
+          console.error('There was an error updating', error);
+          return;
+        }
+
+        console.log('Updated task', task.id);
+      } catch (err) {
+        alert('Error');
+        console.error('Unknown problem updating record', err);
       }
     },
 
-    async deleteTask(context: any, payload: any) {
-      const { error } = await supabase
-        .from('tasks')
-        .delete()
-        .match({
-          id: payload.id,
-        });
-      if (error) {
-        console.log('Error deleting task ', + error);
-      }
-      else {
-        console.log('Task deleted');
+    /**
+     * Targets a specific task via its record id and updates the task description.
+     *
+     */
+    async updateTask(task: Tasks) {
+      try {
+        const { error } = await supabase
+          .from('tasks')
+          .update({ content: task })
+          .eq('id', task.id);
+
+        this.fetchTasks;
+        if (error) {
+          alert(error.message);
+          console.error('There was an error updating', error);
+          return;
+        }
+
+        console.log('Updated task', task.id);
+      } catch (err) {
+        alert('Error');
+        console.error('Unknown problem updating record', err);
       }
     },
 
-    async addTaskLocal(context: any, payload: any) {
-      context.commit('ADD_TASK', payload);
-    }
+    /**
+     *  Deletes a task via its id
+     */
+    async deleteTask(task: Tasks) {
+      try {
+        await supabase.from('tasks').delete().eq('id', task.id);
+        console.log('deleted task', task.id);
+        this.fetchTasks;
+      } catch (error) {
+        console.error('error', error);
+      }
+    },
   },
-
-
-
-}
+});

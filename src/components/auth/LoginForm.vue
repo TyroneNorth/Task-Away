@@ -3,10 +3,7 @@
 
     <h4>Login</h4>
 
-    <div class="q-mb-md">
-      <q-item-label class="form-label">Full name</q-item-label>
-      <q-input v-model="properties.full_name" filled />
-    </div>
+
     <div class="q-mb-md">
       <q-item-label class="form-label">Email</q-item-label>
       <q-input v-model="properties.email" filled type="email" />
@@ -30,9 +27,7 @@
     </div>
 
     <div class="q-mb-md">
-      <div class="alert alert-danger" v-if="properties.errMsg" role="alert">
-        {{ properties.errMsg }}
-      </div>
+
     </div>
 
   </div>
@@ -40,49 +35,37 @@
 
 <script setup lang="ts">
 import { register } from 'src/auth/sb_add_new_user';
-import { reactive } from 'vue';
+import { reactive, ref } from 'vue';
 import RegisterBtn from './RegisterBtn.vue';
-//import { useQuasar } from 'quasar';
-//import supabase from 'src/boot/supabase';
-//import { useRouter } from 'vue-router';
 import LoginBtn from './LoginBtn.vue';
-import stores from 'src/stores/auth';
-//import { createUserData } from 'src/db/createuser';
-import supabase from 'src/boot/supabase';
+import { useRouter } from 'vue-router';
 import { login } from 'src/auth/sb_sign_in';
-//import {createUserData} from 'src/db/createuser';
+import supabase from 'src/boot/supabase';
 
 
-//const $q = useQuasar();
+
 //const $router = useRouter();
+
 const properties = reactive({
-  isLoading: false,
-  isPwd: false,
   email: '',
   password: '',
-  full_name: '',
-  errMsg: 'User already registered',
-  show: false,
-
+  isPwd: false
 });
 
+const $router = useRouter();
+const user = ref(supabase.auth.user());
+
+
 const handleRegister = async () => {
-  register(properties.email, properties.password, properties.full_name);
-  //createUserData(properties.email);
-
-
-
-
-
+  register(properties.email, properties.password);
 
 }
 
-
-//const user = stores.getters.user;
-
-
-function handleSignIn() {
+const handleSignIn = async () => {
   login(properties.email, properties.password);
+  if (user.value != null) {
+    $router.push('/');
+  }
 }
 </script>
 

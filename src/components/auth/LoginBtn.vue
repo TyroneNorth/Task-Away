@@ -1,12 +1,11 @@
 
 <template>
   <div>
-    <router-link to="/tasks">
-      <q-btn>
-        <q-tooltip anchor="center right" self="center left" :offset="[10, 10]">Log In</q-tooltip>
-        Log In
-      </q-btn>
-    </router-link>
+    <q-btn>
+      <q-tooltip anchor="center right" self="center left" :offset="[10, 10]">Log In</q-tooltip>
+      Log In
+    </q-btn>
+
   </div>
 </template>
 
