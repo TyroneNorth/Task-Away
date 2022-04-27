@@ -22,8 +22,15 @@
       </q-input>
     </div>
     <div class="row q-gutter-md">
-      <login-btn @click="handleSignIn" />
-      <register-btn @click="handleRegister" />
+      <q-btn @click="handleSignIn" to="/tasks">
+        <q-tooltip anchor="center right" self="center left" :offset="[10, 10]">Log In</q-tooltip>
+        Log In
+      </q-btn>
+      <q-btn @click="handleRegister">
+        <q-tooltip anchor="center right" self="center left" :offset="[10, 10]">Log In</q-tooltip>
+        Sign Up
+      </q-btn>
+
     </div>
 
     <div class="q-mb-md">
@@ -36,11 +43,12 @@
 <script setup lang="ts">
 import { register } from 'src/auth/sb_add_new_user';
 import { reactive, ref } from 'vue';
-import RegisterBtn from './RegisterBtn.vue';
-import LoginBtn from './LoginBtn.vue';
+
 import { useRouter } from 'vue-router';
 import { login } from 'src/auth/sb_sign_in';
 import supabase from 'src/boot/supabase';
+
+
 
 
 
@@ -52,8 +60,7 @@ const properties = reactive({
   isPwd: false
 });
 
-const $router = useRouter();
-const user = ref(supabase.auth.user());
+
 
 
 const handleRegister = async () => {
@@ -63,9 +70,8 @@ const handleRegister = async () => {
 
 const handleSignIn = async () => {
   login(properties.email, properties.password);
-  if (user.value != null) {
-    $router.push('/');
-  }
+
+
 }
 </script>
 

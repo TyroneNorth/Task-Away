@@ -99,7 +99,7 @@ export const useTaskStore = defineStore('tasks', {
       try {
         const { error } = await supabase
           .from('tasks')
-          .update({ content: task })
+          .update({ title: task.title, content: task.content })
           .eq('id', task.id);
 
         this.fetchTasks;

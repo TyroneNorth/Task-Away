@@ -1,12 +1,12 @@
 import supabase from 'src/boot/supabase';
-import { UpdatePartialTasks } from 'src/components/models';
+import { Tasks } from 'src/components/models';
 
-async function updateRowContent(task: UpdatePartialTasks) {
+async function updateRowContent(task: Tasks) {
   try {
     const { data, error } = await supabase
       .from('tasks')
-      .update({ content: task.content })
-      .eq('id', task.id);
+      .update({ title: task.title, content: task.content })
+      .eq('title', task.title);
 
     if (error) {
       alert(error.message);

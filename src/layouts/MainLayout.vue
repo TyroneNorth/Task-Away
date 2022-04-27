@@ -53,28 +53,7 @@
             <q-item-section> Settings </q-item-section>
           </q-item>
 
-          <q-list bordered class="rounded-borders">
-            <q-expansion-item expand-separator icon="list" label="Tasks" caption="# of total combined tasks"
-              default-opened>
-              <q-list bordered separator>
-                <q-item clickable v-ripple>
-                  <q-item-section>Task Category 1</q-item-section>
-                </q-item>
 
-                <q-item clickable v-ripple>
-                  <q-item-section>
-                    <q-item-label>Task Category 2</q-item-label>
-                  </q-item-section>
-                </q-item>
-
-                <q-item clickable v-ripple>
-                  <q-item-section>
-                    <q-item-label>Task Category 3</q-item-label>
-                  </q-item-section>
-                </q-item>
-              </q-list>
-            </q-expansion-item>
-          </q-list>
         </q-list>
       </q-scroll-area>
 

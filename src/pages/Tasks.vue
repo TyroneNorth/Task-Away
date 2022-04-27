@@ -1,69 +1,86 @@
 <script setup lang="ts">
 import { useQuasar } from 'quasar';
-import { onMounted, onUpdated, reactive, ref, shallowReactive } from 'vue';
+import { onMounted, onUpdated, reactive, ref } from 'vue';
 import { useTaskStore } from 'src/stores/tasks';
 import supabase from 'src/boot/supabase';
 import { useRouter } from 'vue-router';
 import { Tasks, } from 'src/components/models';
-import insertRow from 'src/db/sb_insert_row';
+
 
 
 
 const $router = useRouter();
 
 const show = ref(false);
-const secondDialog = ref(false);
+const show2 = ref(false);
 
 function onSubmit() {
   console.log('onSubmit');
-
   show.value = false;
-  newTaskTitle.value = '';
-  newTaskContent.value = '';
+  newTaskProps.newTask.content = '';
+  newTaskProps.newTask.title = '';
 }
 
 function onReset() {
-  properties.title = '';
-  properties.content = '';
+  newTaskProps.newTask.content = '';
+  newTaskProps.newTask.title = '';
 }
 
-//const $router = useRouter();
+function onSubmitUpdate() {
+  console.log('firing onSubmitUpdate');
+  console.log(updateProps, updateNovelTask(updateProps.task, updateProps.task.id));
+  show2.value = false;
 
-const properties = reactive({
-  title: '',
-  content: '',
-});
+}
+
+function onResetUpdate() {
+  updateProps.task.title = '';
+  updateProps.task.content = '';
+}
 
 
-
-const taskStore = ref(useTaskStore());
-const TasksList = ref<Tasks[]>([]);
-TasksList.value = taskStore.value.tasks;
-
-onMounted(() => {
-  taskStore.value.fetchTasks;
-
+const updateProps = reactive({
+  task: <Tasks>{},
 })
 
-onUpdated(() => {
-  TasksList.value.push({
-    title: properties.title,
-    content: properties.content,
+const newTaskProps = reactive({
+  newTask: <Tasks>{},
+})
+
+const taskArray = reactive({
+  tasks: <Tasks[]>[]
+})
+const taskStore = ref(useTaskStore());
+
+
+const initMount = () => {
+  onMounted(() => {
+    if (is_authenticated.value) {
+      taskStore.value.fetchTasks;
+      taskArray.tasks.push(...taskStore.value.tasks);
+    }
   });
 
+}
+initMount();
+onUpdated(() => {
+
+
   taskStore.value.fetchTasks;
+  taskArray.tasks = [];
+  taskArray.tasks.push(...taskStore.value.tasks);
 })
 
 const $q = useQuasar();
-const newTaskTitle = ref('');
-const newTaskContent = ref('')
-const isAuthenticated = ref(false);
-let user = supabase.auth.user();
-if (user != null) {
-  isAuthenticated.value = true;
+
+const is_authenticated = ref(false);
+const user = ref(supabase.auth.user());
+
+if (user.value != null) {
+  is_authenticated.value = true;
 }
 else {
-  isAuthenticated.value = false;
+  is_authenticated.value = false;
   $router.push('/');
 }
 
@@ -83,6 +100,8 @@ function deleteTask(task: Tasks) {
     })
 
   })
+
+  return taskStore.value.fetchTasks;
 }
 
 async function addNovelTask(title: string, content: string) {
@@ -116,63 +135,55 @@ async function addNovelTask(title: string, content: string) {
   else {
     console.log('payload is loaded');
   }
+
+  return taskStore.value.fetchTasks;
 }
 
-async function handleUpdateTask(task: Tasks) {
-  console.log(task);
-  $q.dialog({
-    title: 'Delete Task',
-    message: 'Enter the descriopton for the task.',
-    prompt: {
-      model: newTaskContent.value,
-      type: 'text',
-    },
-    ok: 'Ok',
-    cancel: 'Cancel',
-    persistent: true,
-  }).onOk((task) => {
-    taskStore.value.updateTask(task);
-    //updateRowContent(task);
-    console.log(task.id, task.title, task.content);
-    taskStore.value.$state.tasks.forEach(task => {
-      if (task.id == task.id) {
-        task.content = task.content;
-      }
-    })
+async function updateNovelTask(task: Tasks, id: number) {
+  console.log('Attempting to update task:', id)
+  const { data, error } = await supabase
+    .from('tasks')
+    .update({ title: task.title, content: task.content })
+    .eq('id', id)
+
+  if (error) {
+    console.log(error);
     $q.notify({
-      message: 'Task Updated',
-      color: 'positive',
-      icon: 'check'
+      message: 'Error upating task',
+      color: 'negative',
+      icon: 'error'
     })
-
-  })
-}
-
-function addTask() {
-  $q.dialog({
-    title: 'Add a new task',
-    message: 'Enter a name for the new task',
-    prompt: {
-      model: newTaskTitle.value,
-      type: 'text',
-    },
-    ok: 'Next',
-    cancel: 'Cancel',
-    persistent: true,
-  }).onOk((data) => {
-    insertRow(data);
+  }
+  else {
     console.log(data);
-    taskStore.value.$state.tasks.push({ id: Number(), title: data.title, content: data.content, is_completed: false });
     $q.notify({
-      message: 'Task Created',
+      message: 'Task upated',
       color: 'positive',
       icon: 'check'
     })
-  })
+  }
+  if (task === null || task === undefined) {
+    console.log('payload is /null/undefined');
+  }
+  else {
+    console.log('payload is loaded');
+  }
 
-
-
+  return taskStore.value.fetchTasks;
 }
+
+/**
+ *  Helper function needed to pass task id to updateNovelTask
+ * @param task
+ */
+function logID(task: Tasks) {
+  console.log(task.id);
+  updateProps.task.id = task.id;
+}
+
+
+
+
 
 
 
@@ -207,10 +218,13 @@ function addTask() {
 
 
           <div class="col-3 items-center ">
-            <q-item clickable>
+            <q-item :class="{ 'true': task.is_completed }">
               <q-item-section>
                 <q-checkbox v-on:click="taskStore.updateTaskCompletion(task)" v-model="task.is_completed">
-                  <q-item-label class="task_title">{{ task.title }} </q-item-label>
+                  <div class="row">
+
+                    <q-item-label class="task_title">{{ task.title }} </q-item-label>
+                  </div>
                   <q-tooltip class="bg-primary" anchor="center left" self="center right" :offset="[-10, 0]">Toggle
                     Complete</q-tooltip>
                 </q-checkbox>
@@ -222,12 +236,14 @@ function addTask() {
 
 
           <div class="col-6 items-center">
-            <q-item clickable>
-              <q-item-section clickable @click="handleUpdateTask(task)">
+            <q-item>
+              <q-item-section :class="{ 'true': task.is_completed }">
 
                 <q-tooltip class="bg-primary" anchor="center right" self="center left" :offset="[-20, -20]">Edit
                 </q-tooltip>
-                <q-item-label>{{ task.content }}
+                <q-item-label clickable class="cursor-pointer" v-on:click="logID(task)" @click="show2 = true">{{
+                    task.content
+                }}
                 </q-item-label>
 
 
@@ -237,8 +253,8 @@ function addTask() {
           </div>
 
           <div class="col-3 items-center">
-            <q-item clickable>
-              <q-item-section>
+            <q-item>
+              <q-item-section :class="{ 'true': task.is_completed }">
                 <q-item-label id="removeTask">
                   <div>
                     <q-btn v-on:click="deleteTask(task)" flat dense round color="tertiary" icon="delete">
@@ -252,7 +268,37 @@ function addTask() {
               </q-item-section>
             </q-item>
           </div>
+          <div>
+            <q-dialog v-model="show2">
+              <q-card>
+                <q-card-section>
+                  <div class="text-h6">Update Task</div>
+                </q-card-section>
 
+                <q-card-section class="q-pt-none">
+                  <q-form @submit="onSubmitUpdate" @reset="onResetUpdate" class="q-gutter-md">
+                    <q-input filled v-model="updateProps.task.title" label="Task title" lazy-rules
+                      :rules="[val => val && val.length > 0 || 'Cannot be blank!']" />
+
+                    <q-input filled v-model="updateProps.task.content" label="Description" />
+
+
+
+                    <div>
+                      <q-btn label="Submit" type="submit" color="primary" />
+                      <q-btn label="Reset" type="reset" color="primary" flat class="q-ml-sm" />
+                    </div>
+                  </q-form>
+                </q-card-section>
+
+                <q-card-actions align="left" class="text-primary">
+
+                  <q-btn flat label="Close" v-close-popup />
+                </q-card-actions>
+              </q-card>
+            </q-dialog>
+
+          </div>
 
         </q-list>
       </div>
@@ -266,16 +312,16 @@ function addTask() {
 
             <q-card-section class="q-pt-none">
               <q-form @submit="onSubmit" @reset="onReset" class="q-gutter-md">
-                <q-input filled v-model="newTaskTitle" label="Task title" hint="Name of new task" lazy-rules
-                  :rules="[val => val && val.length > 0 || 'Cannot be blank!']" />
+                <q-input filled v-model="newTaskProps.newTask.title" label="Task title" hint="Name of new task"
+                  lazy-rules :rules="[val => val && val.length > 0 || 'Cannot be blank!']" />
 
-                <q-input filled v-model="newTaskContent" label="Description" />
+                <q-input filled v-model="newTaskProps.newTask.content" label="Description" />
 
 
 
                 <div>
-                  <q-btn @click="addNovelTask(newTaskTitle, newTaskContent)" label="Submit" type="submit"
-                    color="primary" />
+                  <q-btn @click="addNovelTask(newTaskProps.newTask.title, newTaskProps.newTask.content)" label="Submit"
+                    type="submit" color="primary" />
                   <q-btn label="Reset" type="reset" color="primary" flat class="q-ml-sm" />
                 </div>
               </q-form>
@@ -293,26 +339,11 @@ function addTask() {
 
 
 
+
+
     </q-page>
 
-    <q-page class="bg-gray-3 column">
-      <q-footer elevated>
-        <div>
-          <q-btn flat dense round color="tertiary" icon="delete">
-            <q-tooltip class="bg-primary" anchor="center right" self="center left" :offset="[10, 10]">Clear All
-            </q-tooltip>
-          </q-btn>
-        </div>
 
-        <div class="row q-pa-sm bg-primary">
-          <q-input v-model="newTaskTitle" class="col" square filled bg-color="white" placeholder="Add task" dense>
-            <template v-slot:append>
-              <q-btn round dense flat icon="add" @click="addTask" />
-            </template>
-          </q-input>
-        </div>
-      </q-footer>
-    </q-page>
   </q-page>
 
 

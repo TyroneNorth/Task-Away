@@ -5,10 +5,10 @@ declare interface Credentials {
 }
 
 declare interface Tasks {
-  id?: number;
+  id: number;
   title: string;
   content: string;
-  is_completed?: boolean;
+  is_completed: boolean;
 }
 
 declare interface PartialTasks {
