@@ -11,14 +11,4 @@ declare interface Tasks {
   is_completed: boolean;
 }
 
-declare interface PartialTasks {
-  title: string;
-}
-
-declare interface UpdatePartialTasks {
-  id: number;
-  title: string;
-  content: string;
-}
-
-export type { Credentials, Tasks, PartialTasks, UpdatePartialTasks };
+export type { Credentials, Tasks };

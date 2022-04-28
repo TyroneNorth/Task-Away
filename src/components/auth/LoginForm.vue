@@ -42,11 +42,8 @@
 
 <script setup lang="ts">
 import { register } from 'src/auth/sb_add_new_user';
-import { reactive, ref } from 'vue';
-
-import { useRouter } from 'vue-router';
+import { reactive } from 'vue';
 import { login } from 'src/auth/sb_sign_in';
-import supabase from 'src/boot/supabase';
 
 
 

@@ -8,7 +8,23 @@ import { Tasks, } from 'src/components/models';
 
 
 
+const $q = useQuasar();
 
+const is_authenticated = ref(false);
+const user = ref(supabase.auth.user());
+
+const updateProps = reactive({
+  task: <Tasks>{},
+})
+
+const newTaskProps = reactive({
+  newTask: <Tasks>{},
+})
+
+const taskArray = reactive({
+  tasks: <Tasks[]>[]
+})
+const taskStore = ref(useTaskStore());
 const $router = useRouter();
 
 const show = ref(false);
@@ -30,6 +46,12 @@ function onSubmitUpdate() {
   console.log('firing onSubmitUpdate');
   console.log(updateProps, updateNovelTask(updateProps.task, updateProps.task.id));
   show2.value = false;
+  //wait 2 seconds
+  setTimeout(() => {
+    $router.push('/tasks');
+  }, 2000);
+  updateProps.task.title = '';
+  updateProps.task.content = '';
 
 }
 
@@ -39,18 +61,7 @@ function onResetUpdate() {
 }
 
 
-const updateProps = reactive({
-  task: <Tasks>{},
-})
 
-const newTaskProps = reactive({
-  newTask: <Tasks>{},
-})
-
-const taskArray = reactive({
-  tasks: <Tasks[]>[]
-})
-const taskStore = ref(useTaskStore());
 
 
 const initMount = () => {
@@ -71,10 +82,6 @@ onUpdated(() => {
   taskArray.tasks.push(...taskStore.value.tasks);
 })
 
-const $q = useQuasar();
-
-const is_authenticated = ref(false);
-const user = ref(supabase.auth.user());
 
 if (user.value != null) {
   is_authenticated.value = true;
@@ -105,63 +112,37 @@ function deleteTask(task: Tasks) {
 }
 
 async function addNovelTask(title: string, content: string) {
-  const { data, error } = await supabase.from('tasks').insert([
-    {
-      title: title,
-      content: content,
-      user_id: supabase.auth.user()?.id,
-    },
-  ]);
-  if (error) {
-    console.log(error);
-    $q.notify({
-      message: 'Error adding task',
-      color: 'negative',
-      icon: 'error'
-    })
-  }
-  else {
-    console.log(data);
-    $q.notify({
-      message: 'Task Added',
-      color: 'positive',
-      icon: 'check'
-    })
-  }
+  await taskStore.value.addTasks(title, content);
 
-  if (data === null || data === undefined) {
+  console.log(title, content);
+  $q.notify({
+    message: 'Task Added',
+    color: 'positive',
+    icon: 'check'
+  })
+
+
+  if ({ title, content } === null || { title, content } === undefined) {
     console.log('data is null');
   }
   else {
     console.log('payload is loaded');
   }
 
-  return taskStore.value.fetchTasks;
+  taskStore.value.fetchTasks;
 }
 
 async function updateNovelTask(task: Tasks, id: number) {
-  console.log('Attempting to update task:', id)
-  const { data, error } = await supabase
-    .from('tasks')
-    .update({ title: task.title, content: task.content })
-    .eq('id', id)
 
-  if (error) {
-    console.log(error);
-    $q.notify({
-      message: 'Error upating task',
-      color: 'negative',
-      icon: 'error'
-    })
-  }
-  else {
-    console.log(data);
-    $q.notify({
-      message: 'Task upated',
-      color: 'positive',
-      icon: 'check'
-    })
-  }
+  await taskStore.value.updateTask(task, id);
+
+
+  $q.notify({
+    message: 'Task upated',
+    color: 'positive',
+    icon: 'check'
+  })
+
   if (task === null || task === undefined) {
     console.log('payload is /null/undefined');
   }
@@ -169,7 +150,7 @@ async function updateNovelTask(task: Tasks, id: number) {
     console.log('payload is loaded');
   }
 
-  return taskStore.value.fetchTasks;
+  taskStore.value.fetchTasks;
 }
 
 /**
@@ -237,7 +218,8 @@ function logID(task: Tasks) {
 
           <div class="col-6 items-center">
             <q-item>
-              <q-item-section :class="{ 'true': task.is_completed }">
+              <q-item-section clickable v-on:click="logID(task)" @click="show2 = true"
+                :class="{ 'true': task.is_completed }" class="cursor-pointer">
 
                 <q-tooltip class="bg-primary" anchor="center right" self="center left" :offset="[-20, -20]">Edit
                 </q-tooltip>

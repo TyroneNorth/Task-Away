@@ -1,12 +1,12 @@
 import { defineStore } from 'pinia';
 import supabase from 'src/boot/supabase';
-import { Tasks, PartialTasks } from 'src/components/models';
+import { Tasks } from 'src/components/models';
 import { ref } from 'vue';
 
 export const useTaskStore = defineStore('tasks', {
   state: () => ({
     /** @type {unknown[{}]} */
-    tasks: ref<Tasks[]>([]),
+    tasks: ref(<Tasks[]>[]),
     meta: {
       totalCount: 0,
     },
@@ -49,84 +49,95 @@ export const useTaskStore = defineStore('tasks', {
     /**
      *  Add a new tasks to supabase
      */
-    async addTasks(task: Tasks) {
-      try {
-        const { data, error } = await supabase.from('tasks').insert(task);
+    async addTasks(title: string, content: string) {
+      const { data, error } = await supabase.from('tasks').insert([
+        {
+          title: title,
+          content: content,
+          user_id: supabase.auth.user()?.id,
+        },
+      ]);
 
-        if (error) {
-          alert(error.message);
-          console.error('There was an error inserting', error);
-        }
-        // store response to tasks
-        this.tasks.push({ ...task });
-        console.log('created a new tasks');
-        return data;
-      } catch (err) {
-        alert('Error');
-        console.error('Unknown problem inserting to db', err);
-        return null;
+      if (error) {
+        alert(error.message);
+        console.error('There was an error inserting', error);
       }
+      // store response to tasks
+
+      this.tasks.push({
+        id: this.tasks.length + 1,
+        title: title,
+        content: content,
+        is_completed: false,
+      });
+      console.log('created a new tasks');
+      return data;
     },
 
     /**
      * Targets a specific task via its record id and updates the is_completed attribute.
      */
     async updateTaskCompletion(task: Tasks) {
-      try {
-        const { error } = await supabase
-          .from('tasks')
-          .update({ is_completed: !!task.is_completed })
-          .eq('id', task.id);
+      const { error } = await supabase
+        .from('tasks')
+        .update({ is_completed: !!task.is_completed })
+        .eq('id', task.id);
 
-        if (error) {
-          alert(error.message);
-          console.error('There was an error updating', error);
-          return;
-        }
-
-        console.log('Updated task', task.id);
-      } catch (err) {
-        alert('Error');
-        console.error('Unknown problem updating record', err);
+      if (error) {
+        alert(error.message);
+        console.error('There was an error updating', error);
+        return;
       }
+
+      console.log('Updated task', task.id);
+      return;
     },
 
     /**
      * Targets a specific task via its record id and updates the task description.
      *
      */
-    async updateTask(task: Tasks) {
-      try {
-        const { error } = await supabase
-          .from('tasks')
-          .update({ title: task.title, content: task.content })
-          .eq('id', task.id);
+    async updateTask(task: Tasks, id: number) {
+      const { data, error } = await supabase
+        .from('tasks')
+        .update({ title: task.title, content: task.content })
+        .eq('id', id);
 
-        this.fetchTasks;
-        if (error) {
-          alert(error.message);
-          console.error('There was an error updating', error);
-          return;
-        }
-
-        console.log('Updated task', task.id);
-      } catch (err) {
-        alert('Error');
-        console.error('Unknown problem updating record', err);
+      if (error) {
+        alert(error.message);
+        console.error('There was an error updating', error);
+        return;
       }
+      // update local store
+      task.is_completed = false;
+      this.tasks.splice(
+        this.tasks.findIndex((t) => t.id === id),
+        1,
+        task
+      );
+
+      console.log('Updated task', task.id);
+      return data;
     },
 
     /**
      *  Deletes a task via its id
      */
     async deleteTask(task: Tasks) {
-      try {
-        await supabase.from('tasks').delete().eq('id', task.id);
-        console.log('deleted task', task.id);
-        this.fetchTasks;
-      } catch (error) {
-        console.error('error', error);
+      const { data, error } = await supabase
+        .from('tasks')
+        .delete()
+        .eq('id', task.id);
+      console.log('deleted task', task.id);
+      this.fetchTasks;
+
+      if (error) {
+        alert(error.message);
+        console.error('There was an error deleting', error);
+        return;
       }
+
+      return data;
     },
   },
 });
