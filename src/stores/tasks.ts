@@ -21,7 +21,7 @@ export const useTaskStore = defineStore('tasks', {
         const { data: tasks, error } = await supabase
           .from('tasks')
           .select('*')
-          .order('id');
+          .order('task_id');
 
         if (error) {
           console.log('error', error);
@@ -40,12 +40,29 @@ export const useTaskStore = defineStore('tasks', {
         console.error('Error retrieving data from db', err);
       }
     },
-    /**
-     * Retrieve local store task id
-     */
   },
 
   actions: {
+    /**
+     *  fetch task by id
+     */
+    async fetchTaskById(id: number) {
+      const { data: tasks, error } = await supabase
+        .from('tasks')
+        .select('*')
+        .eq('task_id', id);
+
+      if (error) {
+        console.log('error', error);
+        return;
+      }
+      // handle for when no tasks are returned
+      if (tasks === null) {
+        return;
+      }
+      // return task
+      return tasks;
+    },
     /**
      *  Add a new tasks to supabase
      */
@@ -63,13 +80,10 @@ export const useTaskStore = defineStore('tasks', {
         console.error('There was an error inserting', error);
       }
       // store response to tasks
-
-      this.tasks.push({
-        id: this.tasks.length + 1,
-        title: title,
-        content: content,
-        is_completed: false,
+      data?.forEach((task: Tasks) => {
+        this.tasks.push(task);
       });
+
       console.log('created a new tasks');
       return data;
     },
@@ -80,8 +94,8 @@ export const useTaskStore = defineStore('tasks', {
     async updateTaskCompletion(task: Tasks) {
       const { error } = await supabase
         .from('tasks')
-        .update({ is_completed: !!task.is_completed })
-        .eq('id', task.id);
+        .update({ is_completed: task.is_completed })
+        .eq('task_id', task.task_id);
 
       if (error) {
         alert(error.message);
@@ -89,7 +103,7 @@ export const useTaskStore = defineStore('tasks', {
         return;
       }
 
-      console.log('Updated task', task.id);
+      console.log('Updated task', task.task_id);
       return;
     },
 
@@ -101,7 +115,7 @@ export const useTaskStore = defineStore('tasks', {
       const { data, error } = await supabase
         .from('tasks')
         .update({ title: task.title, content: task.content })
-        .eq('id', id);
+        .eq('task_id', id);
 
       if (error) {
         alert(error.message);
@@ -111,12 +125,12 @@ export const useTaskStore = defineStore('tasks', {
       // update local store
       task.is_completed = false;
       this.tasks.splice(
-        this.tasks.findIndex((t) => t.id === id),
+        this.tasks.findIndex((t) => t.task_id === id),
         1,
         task
       );
 
-      console.log('Updated task', task.id);
+      console.log('Updated task', task.task_id);
       return data;
     },
 
@@ -127,9 +141,13 @@ export const useTaskStore = defineStore('tasks', {
       const { data, error } = await supabase
         .from('tasks')
         .delete()
-        .eq('id', task.id);
-      console.log('deleted task', task.id);
-      this.fetchTasks;
+        .eq('task_id', task.task_id);
+      console.log('deleted task', task.task_id);
+      // update local store
+      this.tasks.splice(
+        this.tasks.findIndex((t) => t.task_id === task.task_id),
+        1
+      );
 
       if (error) {
         alert(error.message);

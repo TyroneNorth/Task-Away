@@ -76,11 +76,14 @@
 
     <q-page-container>
       <h3 class="q-ma-md">Welcome to the Task Away app!</h3>
-      <router-view v-slot="{ Component }">
-        <keep-alive>
-          <Component :is="Component" />
-        </keep-alive>
-      </router-view>
+      <Suspense fallback="Loading...">
+
+        <router-view v-slot="{ Component }">
+          <keep-alive>
+            <Component :is="Component" />
+          </keep-alive>
+        </router-view>
+      </Suspense>
     </q-page-container>
   </q-layout>
 </template>

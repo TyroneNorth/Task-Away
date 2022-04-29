@@ -22,7 +22,8 @@
       </q-input>
     </div>
     <div class="row q-gutter-md">
-      <q-btn @click="handleSignIn" to="/tasks">
+      <q-btn v-model="properties.email" @click="handleSignIn" v-on:click="$emit('createUserData', properties.email)"
+        to="/tasks">
         <q-tooltip anchor="center right" self="center left" :offset="[10, 10]">Log In</q-tooltip>
         Log In
       </q-btn>
@@ -44,7 +45,9 @@
 import { register } from 'src/auth/sb_add_new_user';
 import { reactive } from 'vue';
 import { login } from 'src/auth/sb_sign_in';
+import { useRouter } from 'vue-router';
 
+//TODO: Add event emitters that when listened to fire action to write user data to profile table
 
 
 
@@ -62,6 +65,10 @@ const properties = reactive({
 
 const handleRegister = async () => {
   register(properties.email, properties.password);
+  //Create user data to profile
+
+
+
 
 }
 
@@ -69,6 +76,7 @@ const handleSignIn = async () => {
   login(properties.email, properties.password);
 
 
+  useRouter().push('/tasks');
 }
 </script>
 

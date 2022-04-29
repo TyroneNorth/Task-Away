@@ -44,7 +44,7 @@ function onReset() {
 
 function onSubmitUpdate() {
   console.log('firing onSubmitUpdate');
-  console.log(updateProps, updateNovelTask(updateProps.task, updateProps.task.id));
+  console.log(updateProps, updateNovelTask(updateProps.task, updateProps.task.task_id));
   show2.value = false;
   //wait 2 seconds
   setTimeout(() => {
@@ -158,8 +158,8 @@ async function updateNovelTask(task: Tasks, id: number) {
  * @param task
  */
 function logID(task: Tasks) {
-  console.log(task.id);
-  updateProps.task.id = task.id;
+  console.log(task.task_id);
+  updateProps.task.task_id = task.task_id;
 }
 
 

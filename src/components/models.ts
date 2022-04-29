@@ -5,7 +5,7 @@ declare interface Credentials {
 }
 
 declare interface Tasks {
-  id: number;
+  task_id: number;
   title: string;
   content: string;
   is_completed: boolean;
