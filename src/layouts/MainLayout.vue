@@ -61,24 +61,30 @@
 
     <q-page-container>
       <h3 class="q-ma-md">Welcome to the Task Away app!</h3>
-      <Suspense fallback="Loading...">
 
-        <router-view v-slot="{ Component }">
-          <keep-alive>
-            <Component :is="Component" />
-          </keep-alive>
-        </router-view>
-      </Suspense>
+
+      <router-view v-slot="{ Component }">
+        <keep-alive>
+          <Component :is="Component" />
+        </keep-alive>
+      </router-view>
+
     </q-page-container>
   </q-layout>
 </template>
 
 <script setup lang="ts">
 import { date } from 'quasar';
-import { ref } from 'vue';
+import { ref, reactive } from 'vue';
 
 //import stores from 'src/stores/auth/';
+import supabase from 'src/boot/supabase';
 
+
+const user = reactive({
+  id: supabase.auth.user()?.id,
+  email: supabase.auth.user()?.email,
+})
 
 
 
