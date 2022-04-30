@@ -1,11 +1,11 @@
 import { RouteRecordRaw } from 'vue-router';
-
 import MainLayout from 'layouts/MainLayout.vue';
 import UserLayout from 'layouts/UserLayout.vue';
 import Tasks from 'pages/Tasks.vue';
 import HelpPage from 'pages/HelpPage.vue';
 import SettingsPage from 'src/pages/auth/SettingsPage.vue';
 import IndexPage from 'src/pages/IndexPage.vue';
+
 const routes: RouteRecordRaw[] = [
   {
     path: '/',

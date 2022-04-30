@@ -8,6 +8,9 @@ import {
 } from 'vue-router';
 import { useQuasar } from 'quasar';
 import routes from './routes';
+import userRoutes from './routes';
+import supabase from 'src/boot/supabase';
+import { ref } from 'vue';
 
 /*
  * If not building with SSR mode, you can
@@ -19,11 +22,16 @@ import routes from './routes';
  */
 
 export default route(function (/* { store, ssrContext } */) {
-  const $q = useQuasar();
+  const isAuthenticated = ref(false);
+  if (supabase.auth.user()?.role === 'authenticated') {
+    isAuthenticated.value = true;
+  }
 
   const createHistory = process.env.SERVER
     ? createMemoryHistory
-    : (process.env.VUE_ROUTER_MODE === 'history' ? createWebHistory : createWebHashHistory);
+    : process.env.VUE_ROUTER_MODE === 'history'
+    ? createWebHistory
+    : createWebHashHistory;
 
   const Router = createRouter({
     scrollBehavior: () => ({ left: 0, top: 0 }),
@@ -35,50 +43,39 @@ export default route(function (/* { store, ssrContext } */) {
     history: createHistory(process.env.VUE_ROUTER_BASE),
   });
 
-  const getCurrentUser = () =>
-    new Promise((resolve, reject) => {
-      const removeListener = onAuthStateChanged(
-        getAuth(),
-        (user) => {
-          removeListener();
-          resolve(user);
-        },
-        reject
-      );
+  function getCurrentUser() {
+    return supabase.auth.user();
+  }
 
-      Router.beforeEach(async (to, from, next) => {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const user = await getCurrentUser();
-        if (to.matched.some((record) => record.meta.requiresAuth)) {
-          if (user) {
-            next('/tasks');
-          } else {
-            $q.dialog({
-              title: 'Error',
-              message: 'You must be logged in to view this page',
-              color: 'negative',
-            });
-            next('/');
-          }
-        } else if (to.matched.some((record) => record.meta.requiresNoAuth)) {
-          if (!user) {
-            next();
-          } else {
-            next('/');
-          }
-        } else if (to.matched.some((record) => record.meta.requiresVerify)) {
-          if (user) {
-            next();
-          } else {
-            next('/');
-          }
-        } else {
-          console.log('else');
-          next();
-        }
-      });
-
-    });
-
+  Router.beforeEach(async (to, from, next) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const user = await getCurrentUser();
+    if (to.matched.some((userRoutes) => userRoutes.meta.requiresAuth)) {
+      if (user) {
+        next('/tasks');
+      } else {
+        next('/');
+      }
+    } else if (
+      to.matched.some((userRoutes) => userRoutes.meta.requiresNoAuth)
+    ) {
+      if (!user) {
+        next();
+      } else {
+        next('/');
+      }
+    } else if (
+      to.matched.some((userRoutes) => userRoutes.meta.requiresVerify)
+    ) {
+      if (user) {
+        next();
+      } else {
+        next('/');
+      }
+    } else {
+      console.log('else');
+      next();
+    }
+  });
   return Router;
 });

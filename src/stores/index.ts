@@ -1,6 +1,6 @@
-import { store } from 'quasar/wrappers'
-import { createPinia } from 'pinia'
-import authentication from './auth'
+import { store } from 'quasar/wrappers';
+import { createPinia } from 'pinia';
+import { useUserStore } from './auth';
 
 /*
  * If not building with SSR mode, you can
@@ -12,10 +12,10 @@ import authentication from './auth'
  */
 
 export default store((/* { ssrContext } */) => {
-  const pinia = createPinia()
-  pinia.state.value.auth = authentication
+  const pinia = createPinia();
+  pinia.state.value.auth = useUserStore;
   // You can add Pinia plugins here
   // pinia.use(SomePiniaPlugin)
 
-  return pinia
-})
+  return pinia;
+});

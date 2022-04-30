@@ -13,8 +13,8 @@
 
     <q-drawer v-model="leftDrawerOpen" show-if-above bordered :width="250" :breakpoint="600">
       <q-scroll-area style="
-          height: calc(100% - 248px);
-          margin-top: 248px;
+          height: calc(100% - 192px);
+          margin-top: 192px;
           border-right: 1px solid #ddd;
         ">
         <q-list padding>
@@ -45,7 +45,7 @@
         </q-list>
       </q-scroll-area>
 
-      <q-img class="absolute-top" src="../static/mountains.svg" style="height: 248px">
+      <q-img class="absolute-top" src="../static/mountains.svg" style="height: 192px">
         <div class="absolute-bottom bg-transparent">
           <q-avatar size="56px" class="q-mb-sm">
             <img src="https://cdn.quasar.dev/img/boy-avatar.png" alt="user avatar icon/gravatar" />

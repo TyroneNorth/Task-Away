@@ -122,16 +122,21 @@ export const useTaskStore = defineStore('tasks', {
         console.error('There was an error updating', error);
         return;
       }
-      // update local store
-      task.is_completed = false;
-      this.tasks.splice(
-        this.tasks.findIndex((t) => t.task_id === id),
-        1,
-        task
-      );
+      // update local store by task id
+      this.tasks.forEach((t: Tasks) => {
+        if (t.task_id === id) {
+          t.title = task.title;
+          t.content = task.content;
+        }
+      });
 
-      console.log('Updated task', task.task_id);
-      return data;
+      console.log(
+        'Updated task',
+        task.task_id,
+        'new data: ',
+        data[0].title,
+        data[0].content
+      );
     },
 
     /**

@@ -45,7 +45,6 @@ const newTaskProps = reactive({
 
 
 const taskStore = ref(useTaskStore());
-const $router = useRouter();
 
 const show = ref(false);
 const show2 = ref(false);
@@ -67,11 +66,9 @@ function onSubmitUpdate() {
   console.log(updateProps, updateNovelTask(updateProps.task, updateProps.task.task_id));
   show2.value = false;
   //wait 2 seconds
-  setTimeout(() => {
-    $router.push('/tasks');
-  }, 2000);
-  updateProps.task.title = '';
-  updateProps.task.content = '';
+
+  //updateProps.task.title = '';
+  //updateProps.task.content = '';
 
 }
 
@@ -157,8 +154,6 @@ async function updateNovelTask(task: Tasks, id: number) {
   else {
     console.log('payload is loaded');
   }
-
-  taskStore.value.fetchTasks;
 }
 
 /**

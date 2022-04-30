@@ -7,13 +7,24 @@ import { ref } from 'vue';
 
 export const userSession = ref<Session | null>(null);
 
-export default defineStore('auth', {
+export const useUserStore = defineStore('auth', {
   state: () => ({
     /** @type {unknown} */
     user: supabase.auth.user(),
     /** @type {unknown} */
     session: supabase.auth.session(),
   }),
+
+  getters: {
+    /**
+     * Retrieve the current user
+     * @returns {unknown}
+     */
+    getUser() {
+      this.user = supabase.auth.user();
+    },
+  },
+
   actions: {
     /*
      * Handles user login via email + password into a supabase session.
