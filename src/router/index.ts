@@ -8,9 +8,6 @@ import {
 } from 'vue-router';
 import { useQuasar } from 'quasar';
 import routes from './routes';
-import userRoutes from './routes';
-import supabase from 'src/boot/supabase';
-import { ref } from 'vue';
 
 /*
  * If not building with SSR mode, you can
@@ -22,10 +19,7 @@ import { ref } from 'vue';
  */
 
 export default route(function (/* { store, ssrContext } */) {
-  const isAuthenticated = ref(false);
-  if (supabase.auth.user()?.role === 'authenticated') {
-    isAuthenticated.value = true;
-  }
+  const $q = useQuasar();
 
   const createHistory = process.env.SERVER
     ? createMemoryHistory
@@ -43,39 +37,44 @@ export default route(function (/* { store, ssrContext } */) {
     history: createHistory(process.env.VUE_ROUTER_BASE),
   });
 
-  function getCurrentUser() {
-    return supabase.auth.user();
-  }
+  const getCurrentUser = () =>
+    new Promise((resolve, reject) => {
+      const removeListener = onAuthStateChanged(
+        getAuth(),
+        (user) => {
+          removeListener();
+          resolve(user);
+        },
+        reject
+      );
 
-  Router.beforeEach(async (to, from, next) => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const user = await getCurrentUser();
-    if (to.matched.some((userRoutes) => userRoutes.meta.requiresAuth)) {
-      if (user) {
-        next('/tasks');
-      } else {
-        next('/');
-      }
-    } else if (
-      to.matched.some((userRoutes) => userRoutes.meta.requiresNoAuth)
-    ) {
-      if (!user) {
-        next();
-      } else {
-        next('/');
-      }
-    } else if (
-      to.matched.some((userRoutes) => userRoutes.meta.requiresVerify)
-    ) {
-      if (user) {
-        next();
-      } else {
-        next('/');
-      }
-    } else {
-      console.log('else');
-      next();
-    }
-  });
+      Router.beforeEach(async (to, from, next) => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const user = await getCurrentUser();
+        if (to.matched.some((record) => record.meta.requiresAuth)) {
+          if (user) {
+            next('/tasks');
+          } else {
+            next('/');
+          }
+        } else if (to.matched.some((record) => record.meta.requiresNoAuth)) {
+          if (!user) {
+            next();
+          } else {
+            next('/');
+          }
+        } else if (to.matched.some((record) => record.meta.requiresVerify)) {
+          if (user) {
+            next();
+          } else {
+            next('/');
+          }
+        } else {
+          console.log('else');
+          next();
+        }
+      });
+    });
+
   return Router;
 });

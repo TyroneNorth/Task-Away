@@ -5,6 +5,8 @@ import Tasks from 'pages/Tasks.vue';
 import HelpPage from 'pages/HelpPage.vue';
 import SettingsPage from 'src/pages/auth/SettingsPage.vue';
 import IndexPage from 'src/pages/IndexPage.vue';
+import supabase from 'src/boot/supabase';
+import { Notify } from 'quasar';
 
 const routes: RouteRecordRaw[] = [
   {
@@ -29,6 +31,27 @@ const userRoutes: RouteRecordRaw[] = [
   {
     path: '/user',
     component: UserLayout,
+    beforeEnter(to, from) {
+      if (!supabase.auth.user() && to.path !== '') {
+        Notify.create({
+          message: 'Please login to access this page',
+          color: 'negative',
+          timeout: 5000,
+        });
+        console.log(
+          'Authenticaton error, user is not logged in or does not have correct permission to access resource. Routing from ',
+          from
+        );
+        return {
+          name: '',
+          params: { pathMatch: to.path.split('/'.slice(1)) },
+          query: to.query,
+          hash: to.hash,
+        };
+      } else {
+        return { message: 'You are already logged in!' };
+      }
+    },
     children: [
       {
         path: '/user/settings',
