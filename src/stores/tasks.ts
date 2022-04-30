@@ -64,6 +64,47 @@ export const useTaskStore = defineStore('tasks', {
       return tasks;
     },
     /**
+     *  fetch task title by id
+     */
+    async fetchTaskTitleById(id: number) {
+      const { data: title, error } = await supabase
+        .from('tasks')
+        .select('title')
+        .eq('task_id', id);
+
+      if (error) {
+        console.log('error', error);
+        return;
+      }
+      // handle for when no tasks are returned
+      if (title === null) {
+        return;
+      }
+      // return title to string
+      return title.toString();
+    },
+    /**
+     * fetch task content by id
+     */
+    async fetchTaskContentById(id: number) {
+      const { data: content, error } = await supabase
+        .from('tasks')
+        .select('content')
+        .eq('task_id', id);
+
+      if (error) {
+        console.log('error', error);
+        return;
+      }
+      // handle for when no tasks are returned
+      if (content === null) {
+        return;
+      }
+      // return coontent
+      return content.toString();
+    },
+
+    /**
      *  Add a new tasks to supabase
      */
     async addTasks(title: string, content: string) {

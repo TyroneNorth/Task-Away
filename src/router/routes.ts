@@ -6,12 +6,12 @@ import HelpPage from 'pages/HelpPage.vue';
 import SettingsPage from 'src/pages/auth/SettingsPage.vue';
 import IndexPage from 'src/pages/IndexPage.vue';
 import supabase from 'src/boot/supabase';
-import { Notify } from 'quasar';
 
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
     component: MainLayout,
+
     children: [
       { path: '/help', component: HelpPage },
 
@@ -35,19 +35,15 @@ const userRoutes: RouteRecordRaw[] = [
       requiresAuth: true,
     },
     beforeEnter(to, from, next) {
-      const currentUser = supabase.auth.user();
-      const requiresAuth = to.matched.some(
-        (record) => record.meta.requiresAuth
-      );
-      if (requiresAuth && !currentUser) {
-        Notify.create({
-          message: 'You must be logged in to view this page',
-          color: 'negative',
-        });
-        next('/');
-      } else {
-        next();
-      }
+      supabase.auth.onAuthStateChange((user) => {
+        const currentUser = user;
+        const requiresAuth = to.matched.some(
+          (record) => record.meta.requiresAuth
+        );
+        if (requiresAuth && !currentUser) next('');
+        else if (!requiresAuth && currentUser) next('/');
+        else next();
+      });
     },
 
     children: [

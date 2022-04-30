@@ -50,9 +50,8 @@
 
 <script setup lang="ts">
 import SettingsPage from './auth/SettingsPage.vue';
-import { register } from 'src/auth/sb_add_new_user';
+
 import { reactive, ref } from 'vue';
-import { login } from 'src/auth/sb_sign_in';
 import { useUserStore } from 'src/stores/auth';
 import supabase from 'src/boot/supabase';
 
@@ -75,7 +74,7 @@ const isPwd = ref(false);
 
 
 const handleRegister = () => {
-  register(properties.email, properties.password);
+  userStore.handleSignup(properties);
   //Create user data to profile
 
 

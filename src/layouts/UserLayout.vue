@@ -60,7 +60,9 @@
           </q-avatar>
           <div class="text-weight-bold">
             {{ user.email }}
+            <!--TODO: Add @username
             <div class="text-weight-regular">@ {{ user.id }}</div>
+            -->
           </div>
         </div>
       </q-img>

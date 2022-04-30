@@ -2,9 +2,9 @@
 import { useQuasar } from 'quasar';
 import { onMounted, onUpdated, reactive, ref } from 'vue';
 import { useTaskStore } from 'src/stores/tasks';
-import { useRouter } from 'vue-router';
 import { Tasks, } from 'src/components/models';
 import supabase from 'src/boot/supabase';
+
 
 
 
@@ -67,8 +67,8 @@ function onSubmitUpdate() {
   show2.value = false;
   //wait 2 seconds
 
-  //updateProps.task.title = '';
-  //updateProps.task.content = '';
+  updateProps.task.title = '';
+  updateProps.task.content = '';
 
 }
 
@@ -183,10 +183,16 @@ function logID(task: Tasks) {
       <q-btn @click="show = true" flat dense round side="left" color="primary" icon="add">
         <q-tooltip class="bg-primary" anchor="center right" self="center left" :offset="[10, 10]">Add List</q-tooltip>
       </q-btn>
+      <!--TODO: Options Button
 
-      <q-btn flat dense round color="primary" icon="more_horiz" side="right">
+<q-btn flat dense round color="primary" icon="more_horiz" side="right">
         <q-tooltip class="bg-primary" anchor="center right" self="center left" :offset="[10, 10]">Options</q-tooltip>
       </q-btn>
+
+
+
+
+Options Button-->
     </q-tabs>
     <!--End tab bar-->
 
@@ -195,13 +201,13 @@ function logID(task: Tasks) {
 
 
       <div>
-        <q-list class="row items-center" bordered seperator v-for=" (task, id) in taskStore.$state.tasks" :key="id">
+        <q-list class="row items-end" bordered seperator v-for=" (task, id) in taskStore.$state.tasks" :key="id">
 
 
 
 
 
-          <div class="col-3 items-center ">
+          <div class="col col-xs-12">
             <q-item :class="{ 'true': task.is_completed }">
               <q-item-section>
                 <q-checkbox v-on:click="taskStore.updateTaskCompletion(task)" v-model="task.is_completed">
@@ -219,7 +225,7 @@ function logID(task: Tasks) {
 
 
 
-          <div class="col-8 items-center">
+          <div class="col col-xs-12">
             <q-item>
               <q-item-section clickable v-on:click="logID(task)" @click="show2 = true"
                 :class="{ 'true': task.is_completed }" class="cursor-pointer">
@@ -237,7 +243,7 @@ function logID(task: Tasks) {
             </q-item>
           </div>
 
-          <div class="col-1 items-center">
+          <div class="col col-xs-12">
             <q-item>
               <q-item-section :class="{ 'true': task.is_completed }">
                 <q-item-label id="removeTask">
@@ -254,7 +260,7 @@ function logID(task: Tasks) {
             </q-item>
           </div>
           <div>
-            <q-dialog v-model="show2">
+            <q-dialog v-model="show2" v-for=" (task, id) in taskStore.$state.tasks" :key="id">
               <q-card>
                 <q-card-section>
                   <div class="text-h6">Update Task</div>
@@ -265,7 +271,7 @@ function logID(task: Tasks) {
                     <q-input filled v-model="updateProps.task.title" label="Task title" lazy-rules
                       :rules="[val => val && val.length > 0 || 'Cannot be blank!']" />
 
-                    <q-input filled v-model="updateProps.task.content" label="Description" />
+                    <q-input type="textarea" filled v-model="updateProps.task.content" label="Description" />
 
 
 
@@ -285,41 +291,43 @@ function logID(task: Tasks) {
 
           </div>
 
+          <div>
+            <q-dialog v-model="show">
+              <q-card>
+                <q-card-section>
+                  <div class="text-h6">Add Task</div>
+                </q-card-section>
+
+                <q-card-section class="q-pt-none">
+                  <q-form @submit="onSubmit" @reset="onReset" class="q-gutter-md">
+                    <q-input filled v-model="newTaskProps.newTask.title" label="Task title" hint="Name of new task"
+                      lazy-rules :rules="[val => val && val.length > 0 || 'Cannot be blank!']" />
+
+                    <q-input type="textarea" filled v-model="newTaskProps.newTask.content" label="Description" />
+
+
+
+                    <div>
+                      <q-btn @click="addNovelTask(newTaskProps.newTask.title, newTaskProps.newTask.content)"
+                        label="Submit" type="submit" color="primary" />
+                      <q-btn label="Reset" type="reset" color="primary" flat class="q-ml-sm" />
+                    </div>
+                  </q-form>
+                </q-card-section>
+
+                <q-card-actions align="left" class="text-primary">
+
+                  <q-btn flat label="Close" v-close-popup />
+                </q-card-actions>
+              </q-card>
+            </q-dialog>
+
+          </div>
+
         </q-list>
       </div>
 
-      <div>
-        <q-dialog v-model="show">
-          <q-card>
-            <q-card-section>
-              <div class="text-h6">Add Task</div>
-            </q-card-section>
 
-            <q-card-section class="q-pt-none">
-              <q-form @submit="onSubmit" @reset="onReset" class="q-gutter-md">
-                <q-input filled v-model="newTaskProps.newTask.title" label="Task title" hint="Name of new task"
-                  lazy-rules :rules="[val => val && val.length > 0 || 'Cannot be blank!']" />
-
-                <q-input filled v-model="newTaskProps.newTask.content" label="Description" />
-
-
-
-                <div>
-                  <q-btn @click="addNovelTask(newTaskProps.newTask.title, newTaskProps.newTask.content)" label="Submit"
-                    type="submit" color="primary" />
-                  <q-btn label="Reset" type="reset" color="primary" flat class="q-ml-sm" />
-                </div>
-              </q-form>
-            </q-card-section>
-
-            <q-card-actions align="left" class="text-primary">
-
-              <q-btn flat label="Close" v-close-popup />
-            </q-card-actions>
-          </q-card>
-        </q-dialog>
-
-      </div>
 
 
 

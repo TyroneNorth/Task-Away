@@ -4,7 +4,7 @@ import { Session, Provider } from '@supabase/gotrue-js/dist/main/lib/types';
 import { defineStore } from 'pinia';
 import { Credentials } from 'src/components/models';
 import { ref } from 'vue';
-
+import { Notify } from 'quasar';
 export const userSession = ref<Session | null>(null);
 
 export const useUserStore = defineStore('auth', {
@@ -23,6 +23,13 @@ export const useUserStore = defineStore('auth', {
     getUser() {
       this.user = supabase.auth.user();
     },
+    /**
+     * Retrieve the current session
+     * @returns {unknown}
+     */
+    getSession() {
+      this.session = supabase.auth.session();
+    },
   },
 
   actions: {
@@ -36,12 +43,25 @@ export const useUserStore = defineStore('auth', {
           email: credentials.email,
           password: credentials.password,
         });
+        Notify.create({
+          message: 'Successfully logged in!',
+          color: 'positive',
+          timeout: 2000,
+        });
         if (error) {
-          alert('Error logging in: ' + error.message);
+          Notify.create({
+            message: error.message,
+            color: 'negative',
+            timeout: 5000,
+          });
         }
         // No error throw, but no user detected so send magic link
         if (!error && !user) {
-          alert('Check your email for the login link!');
+          Notify.create({
+            message: 'Please check your email for a magic link',
+            color: 'positive',
+            timeout: 2000,
+          });
         }
         console.log('user', user);
         // update store
@@ -72,7 +92,11 @@ export const useUserStore = defineStore('auth', {
           console.error(error, error.message);
           return;
         }
-        alert('Signup successful, confirmation mail should be sent soon!');
+        Notify.create({
+          message: 'Signup successful, confirmation mail should be sent soon!',
+          color: 'positive',
+          timeout: 2000,
+        });
       } catch (err) {
         alert('Fatal error signing up');
         console.error('signup error', err);
@@ -129,12 +153,18 @@ export const useUserStore = defineStore('auth', {
         const { error } = await supabase.auth.signOut();
 
         if (error) {
-          alert('Error signing out');
+          Notify.create({
+            message: error.message,
+            color: 'negative',
+          });
           console.error('Error', error);
           return;
         }
 
-        alert('You have signed out!');
+        Notify.create({
+          message: 'Successfully logged out!',
+          color: 'positive',
+        });
       } catch (err) {
         alert('Unknown error signing out');
         console.error('Error', err);

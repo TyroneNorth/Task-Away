@@ -1,0 +1,7 @@
+{
+  "appId": "org.solutionsnorthwill.taskaway.app",
+  "appName": "Task Away",
+  "bundledWebRuntime": false,
+  "npmClient": "npm",
+  "webDir": "www"
+}
