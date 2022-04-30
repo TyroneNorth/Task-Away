@@ -20,7 +20,7 @@ ref(supabase.auth.onAuthStateChange(async (event) => {
   if (event === 'SIGNED_IN') {
     user.id = supabase.auth.user()?.id;
     user.email = supabase.auth.user()?.email;
-    const { data: tasks, error } = await supabase
+    const { data: tasks } = await supabase
       .from('tasks')
       .select('*')
       .order('task_id');
