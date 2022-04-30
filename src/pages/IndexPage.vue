@@ -13,12 +13,11 @@
         </div>
         <div class="q-mb-md">
           <q-item-label class="form-label">Password</q-item-label>
-          <q-input v-model="properties.password" filled :type="properties.isPwd ? 'text' : 'password'">
+          <q-input v-model="properties.password" filled :type="isPwd ? 'text' : 'password'">
             <template v-slot:append>
-              <q-icon :name="properties.isPwd ? 'visibility' : 'visibility_off'" class="cursor-pointer"
-                @click="properties.isPwd = !properties.isPwd">
+              <q-icon :name="isPwd ? 'visibility' : 'visibility_off'" class="cursor-pointer" @click="isPwd = !isPwd">
                 <q-tooltip>
-                  <span>{{ properties.isPwd ? 'Hide' : 'Show' }}</span>
+                  <span>{{ isPwd ? 'Hide' : 'Show' }}</span>
                 </q-tooltip>
               </q-icon>
             </template>
@@ -52,10 +51,12 @@
 <script setup lang="ts">
 import SettingsPage from './auth/SettingsPage.vue';
 import { register } from 'src/auth/sb_add_new_user';
-import { reactive } from 'vue';
+import { reactive, ref } from 'vue';
 import { login } from 'src/auth/sb_sign_in';
+import { useUserStore } from 'src/stores/auth';
 import supabase from 'src/boot/supabase';
 
+const userStore = useUserStore();
 
 const user = reactive({
   id: supabase.auth.user()?.id,
@@ -66,8 +67,10 @@ const user = reactive({
 const properties = reactive({
   email: '',
   password: '',
-  isPwd: false
+
 });
+
+const isPwd = ref(false);
 
 
 
@@ -83,7 +86,7 @@ const handleRegister = () => {
 
 const handleSignIn = () => {
 
-  login(properties.email, properties.password);
+  userStore.handleLogin(properties);
 }
 
 

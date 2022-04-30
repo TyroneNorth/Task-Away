@@ -1,4 +1,4 @@
-import { onAuthStateChanged, getAuth } from 'firebase/auth';
+import supabase from 'src/boot/supabase';
 import { route } from 'quasar/wrappers';
 import {
   createMemoryHistory,
@@ -6,7 +6,6 @@ import {
   createWebHashHistory,
   createWebHistory,
 } from 'vue-router';
-import { useQuasar } from 'quasar';
 import routes from './routes';
 
 /*
@@ -19,8 +18,6 @@ import routes from './routes';
  */
 
 export default route(function (/* { store, ssrContext } */) {
-  const $q = useQuasar();
-
   const createHistory = process.env.SERVER
     ? createMemoryHistory
     : process.env.VUE_ROUTER_MODE === 'history'
@@ -38,15 +35,10 @@ export default route(function (/* { store, ssrContext } */) {
   });
 
   const getCurrentUser = () =>
-    new Promise((resolve, reject) => {
-      const removeListener = onAuthStateChanged(
-        getAuth(),
-        (user) => {
-          removeListener();
-          resolve(user);
-        },
-        reject
-      );
+    new Promise((resolve) => {
+      supabase.auth.onAuthStateChange((user) => {
+        resolve(user);
+      });
 
       Router.beforeEach(async (to, from, next) => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars

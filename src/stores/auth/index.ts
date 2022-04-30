@@ -32,7 +32,7 @@ export const useUserStore = defineStore('auth', {
      */
     async handleLogin(credentials: Credentials) {
       try {
-        const { error, user } = await supabase.auth.signIn({
+        const { error, user, session } = await supabase.auth.signIn({
           email: credentials.email,
           password: credentials.password,
         });
@@ -43,9 +43,14 @@ export const useUserStore = defineStore('auth', {
         if (!error && !user) {
           alert('Check your email for the login link!');
         }
+        console.log('user', user);
+        // update store
+        this.user = user;
+        this.session = session;
       } catch (error) {
         console.error('Error thrown:', error);
         alert(error);
+        return error;
       }
       return this.user;
     },

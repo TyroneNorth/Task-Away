@@ -31,27 +31,25 @@ const userRoutes: RouteRecordRaw[] = [
   {
     path: '/user',
     component: UserLayout,
-    beforeEnter(to, from) {
-      if (!supabase.auth.user() && to.path !== '') {
+    meta: {
+      requiresAuth: true,
+    },
+    beforeEnter(to, from, next) {
+      const currentUser = supabase.auth.user();
+      const requiresAuth = to.matched.some(
+        (record) => record.meta.requiresAuth
+      );
+      if (requiresAuth && !currentUser) {
         Notify.create({
-          message: 'Please login to access this page',
+          message: 'You must be logged in to view this page',
           color: 'negative',
-          timeout: 5000,
         });
-        console.log(
-          'Authenticaton error, user is not logged in or does not have correct permission to access resource. Routing from ',
-          from
-        );
-        return {
-          name: '',
-          params: { pathMatch: to.path.split('/'.slice(1)) },
-          query: to.query,
-          hash: to.hash,
-        };
+        next('/');
       } else {
-        return { message: 'You are already logged in!' };
+        next();
       }
     },
+
     children: [
       {
         path: '/user/settings',
