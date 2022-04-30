@@ -2,16 +2,38 @@
 import { useQuasar } from 'quasar';
 import { onMounted, onUpdated, reactive, ref } from 'vue';
 import { useTaskStore } from 'src/stores/tasks';
-import supabase from 'src/boot/supabase';
 import { useRouter } from 'vue-router';
 import { Tasks, } from 'src/components/models';
+import supabase from 'src/boot/supabase';
 
 
 
 const $q = useQuasar();
 
-const is_authenticated = ref(false);
-const user = ref(supabase.auth.user());
+
+const user = reactive({
+  id: supabase.auth.user()?.id,
+  email: supabase.auth.user()?.email,
+});
+
+ref(supabase.auth.onAuthStateChange(async (event) => {
+  if (event === 'SIGNED_IN') {
+    user.id = supabase.auth.user()?.id;
+    user.email = supabase.auth.user()?.email;
+    const { data: tasks, error } = await supabase
+      .from('tasks')
+      .select('*')
+      .order('task_id');
+
+    console.log('task', tasks)
+    taskStore.value.$reset()
+    tasks?.forEach((task) => {
+      //taskStores.taskStore.push(task);
+      taskStore.value.tasks.push(task);
+    });
+
+  }
+}));
 
 const updateProps = reactive({
   task: <Tasks>{},
@@ -21,9 +43,7 @@ const newTaskProps = reactive({
   newTask: <Tasks>{},
 })
 
-const taskArray = reactive({
-  tasks: <Tasks[]>[]
-})
+
 const taskStore = ref(useTaskStore());
 const $router = useRouter();
 
@@ -62,34 +82,22 @@ function onResetUpdate() {
 
 
 
-
-
-const initMount = () => {
-  onMounted(() => {
-    if (is_authenticated.value) {
-      taskStore.value.fetchTasks;
-      taskArray.tasks.push(...taskStore.value.tasks);
-    }
-  });
-
-}
-initMount();
-onUpdated(() => {
+ref(onMounted(() => {
 
 
   taskStore.value.fetchTasks;
-  taskArray.tasks = [];
-  taskArray.tasks.push(...taskStore.value.tasks);
-})
+
+}))
+
+ref(onUpdated(() => {
 
 
-if (user.value != null) {
-  is_authenticated.value = true;
-}
-else {
-  is_authenticated.value = false;
-  $router.push('/');
-}
+  taskStore.value.fetchTasks;
+
+}))
+
+
+
 
 function deleteTask(task: Tasks) {
   $q.dialog({
@@ -216,7 +224,7 @@ function logID(task: Tasks) {
 
 
 
-          <div class="col-6 items-center">
+          <div class="col-8 items-center">
             <q-item>
               <q-item-section clickable v-on:click="logID(task)" @click="show2 = true"
                 :class="{ 'true': task.is_completed }" class="cursor-pointer">
@@ -234,7 +242,7 @@ function logID(task: Tasks) {
             </q-item>
           </div>
 
-          <div class="col-3 items-center">
+          <div class="col-1 items-center">
             <q-item>
               <q-item-section :class="{ 'true': task.is_completed }">
                 <q-item-label id="removeTask">

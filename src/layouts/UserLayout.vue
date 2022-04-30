@@ -19,19 +19,21 @@
         ">
         <q-list padding>
 
-          <q-item to="/" exact clickable v-ripple>
+
+
+
+          <q-item to="/user/tasks" exact clickable v-ripple>
             <q-item-section avatar>
-              <q-icon name="login" />
+              <q-icon name="task" />
             </q-item-section>
 
-            <q-item-section> Login </q-item-section>
+            <q-item-section>
+              Tasks
+            </q-item-section>
           </q-item>
 
 
-
-
-
-          <q-item to="/help" exact clickable v-ripple>
+          <q-item to="/user/help" exact clickable v-ripple>
             <q-item-section avatar>
               <q-icon name="help" />
             </q-item-section>
@@ -39,7 +41,13 @@
             <q-item-section> Help </q-item-section>
           </q-item>
 
+          <q-item to="/user/settings" exact clickable v-ripple>
+            <q-item-section avatar>
+              <q-icon name="settings" />
+            </q-item-section>
 
+            <q-item-section> Settings </q-item-section>
+          </q-item>
 
 
         </q-list>
@@ -50,10 +58,9 @@
           <q-avatar size="56px" class="q-mb-sm">
             <img src="https://cdn.quasar.dev/img/boy-avatar.png" alt="user avatar icon/gravatar" />
           </q-avatar>
-
           <div class="text-weight-bold">
-            Guest
-            <div class="text-weight-regular">@guest</div>
+            {{ user.email }}
+            <div class="text-weight-regular">@ {{ user.id }}</div>
           </div>
         </div>
       </q-img>
@@ -61,30 +68,38 @@
 
     <q-page-container>
       <h3 class="q-ma-md">Welcome to the Task Away app!</h3>
-      <Suspense fallback="Loading...">
 
-        <router-view v-slot="{ Component }">
-          <keep-alive>
-            <Component :is="Component" />
-          </keep-alive>
-        </router-view>
-      </Suspense>
+
+      <router-view v-slot="{ Component }">
+        <keep-alive>
+          <Component :is="Component" />
+        </keep-alive>
+      </router-view>
+
     </q-page-container>
   </q-layout>
 </template>
 
 <script setup lang="ts">
 import { date } from 'quasar';
-import { ref } from 'vue';
-
-//import stores from 'src/stores/auth/';
-
+import { ref, reactive } from 'vue';
+import supabase from 'src/boot/supabase';
 
 
 
+const user = reactive({
+  id: supabase.auth.user()?.id,
+  email: supabase.auth.user()?.email,
+})
+//stores.state.user = user;
+//const displayName = stores.state.user?.email;
 
-
-
+ref(supabase.auth.onAuthStateChange((event) => {
+  if (event === 'SIGNED_IN') {
+    user.id = supabase.auth.user()?.id;
+    user.email = supabase.auth.user()?.email;
+  }
+}));
 
 const leftDrawerOpen = ref(false);
 const timestamp = ref(Date.now());
@@ -97,10 +112,9 @@ function toggleLeftDrawer() {
   leftDrawerOpen.value = !leftDrawerOpen.value;
 }
 
-
-
-
 </script>
+
+
 
 <style lang="scss">
 .header-image {

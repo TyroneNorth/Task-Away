@@ -22,11 +22,14 @@
       </q-input>
     </div>
     <div class="row q-gutter-md">
-      <q-btn v-model="properties.email" @click="handleSignIn" v-on:click="$emit('createUserData', properties.email)"
-        to="/tasks">
+
+      <q-btn v-model="properties.email" @click="handleSignIn">
+
         <q-tooltip anchor="center right" self="center left" :offset="[10, 10]">Log In</q-tooltip>
         Log In
+
       </q-btn>
+
       <q-btn @click="handleRegister">
         <q-tooltip anchor="center right" self="center left" :offset="[10, 10]">Log In</q-tooltip>
         Sign Up
@@ -42,17 +45,27 @@
 </template>
 
 <script setup lang="ts">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</script>
+
+<script lang="ts">
+
 import { register } from 'src/auth/sb_add_new_user';
 import { reactive } from 'vue';
 import { login } from 'src/auth/sb_sign_in';
-import { useRouter } from 'vue-router';
-
-//TODO: Add event emitters that when listened to fire action to write user data to profile table
-
-
-
-
-//const $router = useRouter();
 
 const properties = reactive({
   email: '',
@@ -62,8 +75,7 @@ const properties = reactive({
 
 
 
-
-const handleRegister = async () => {
+const handleRegister = () => {
   register(properties.email, properties.password);
   //Create user data to profile
 
@@ -72,12 +84,16 @@ const handleRegister = async () => {
 
 }
 
-const handleSignIn = async () => {
+
+const handleSignIn = () => {
+
   login(properties.email, properties.password);
 
 
-  useRouter().push('/tasks');
+
 }
+
+export default { handleSignIn, handleRegister }
 </script>
 
 

@@ -1,21 +1,20 @@
 import { RouteRecordRaw } from 'vue-router';
 
+import MainLayout from 'layouts/MainLayout.vue';
+import UserLayout from 'layouts/UserLayout.vue';
+import Tasks from 'pages/Tasks.vue';
+import HelpPage from 'pages/HelpPage.vue';
+import SettingsPage from 'src/pages/auth/SettingsPage.vue';
+import IndexPage from 'src/pages/IndexPage.vue';
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
-    component: () => import('layouts/MainLayout.vue'),
-    children: [{ path: '/tasks', component: () => import('pages/Tasks.vue'), meta: { requiresAuth: true } },
-    { path: '/help', component: () => import('pages/HelpPage.vue') },
-    { path: '/set', component: () => import('src/pages/auth/SettingsPage.vue'), meta: { requiresAuth: true } },
-    { path: '', component: () => import('src/pages/IndexPage.vue') },],
+    component: MainLayout,
+    children: [
+      { path: '/help', component: HelpPage },
 
-
-  },
-
-  // Authentication
-  {
-    path: '/:beforeEnter(.*)*',
-    component: () => import('src/pages/IndexPage.vue'),
+      { path: '', component: IndexPage },
+    ],
   },
 
   // Always leave this as last one,
@@ -26,4 +25,28 @@ const routes: RouteRecordRaw[] = [
   },
 ];
 
-export default routes;
+const userRoutes: RouteRecordRaw[] = [
+  {
+    path: '/user',
+    component: UserLayout,
+    children: [
+      {
+        path: '/user/settings',
+        component: SettingsPage,
+        meta: { requiresAuth: true },
+      },
+      {
+        path: '/user/tasks',
+        component: Tasks,
+        meta: { requiresAuth: true },
+      },
+      {
+        path: '/user/help',
+        component: HelpPage,
+        meta: { requiresAuth: true },
+      },
+    ],
+  },
+];
+
+export default routes.concat(userRoutes);

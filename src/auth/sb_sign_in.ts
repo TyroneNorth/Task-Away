@@ -2,7 +2,7 @@ import supabase from 'src/boot/supabase';
 import { Notify } from 'quasar';
 
 async function login(email: string, password: string) {
-  const { user, session, error } = await supabase.auth.signIn({
+  const { user, error } = await supabase.auth.signIn({
     email: email,
     password: password,
   });
@@ -11,16 +11,16 @@ async function login(email: string, password: string) {
     Notify.create({
       message: error.message,
       color: 'negative',
+      timeout: 5000,
     });
   } else {
     Notify.create({
       message: 'Successfully logged in!',
       color: 'positive',
+      timeout: 2000,
     });
-    console.log('User logged in successfully');
-    console.log(user);
-    console.log(session);
   }
+  return user;
 }
 
 export { login };
