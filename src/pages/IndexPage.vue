@@ -4,48 +4,52 @@
     <template v-else>
       <div class="col-md-5">
 
-        <h4>Login</h4>
+        <q-card class="q-pa-lg">
+          <h4>Login</h4>
 
 
-        <div class="q-mb-md">
-          <q-item-label class="form-label">Email</q-item-label>
-          <q-input v-model="properties.email" filled type="email" />
-        </div>
-        <div class="q-mb-md">
-          <q-item-label class="form-label">Password</q-item-label>
-          <q-input v-model="properties.password" filled :type="isPwd ? 'text' : 'password'">
-            <template v-slot:append>
-              <q-icon :name="isPwd ? 'visibility' : 'visibility_off'" class="cursor-pointer" @click="isPwd = !isPwd">
-                <q-tooltip>
-                  <span>{{ isPwd ? 'Hide' : 'Show' }}</span>
-                </q-tooltip>
-              </q-icon>
-            </template>
-          </q-input>
-        </div>
-        <div class="row q-gutter-md">
+          <div class="q-mb-md">
+            <q-item-label class="form-label">Email</q-item-label>
+            <q-input v-model="properties.email" filled type="email" />
+          </div>
+          <div class="q-mb-md">
+            <q-item-label class="form-label">Password</q-item-label>
+            <q-input v-model="properties.password" filled :type="isPwd ? 'text' : 'password'">
+              <template v-slot:append>
+                <q-icon :name="isPwd ? 'visibility' : 'visibility_off'" class="cursor-pointer" @click="isPwd = !isPwd">
+                  <q-tooltip>
+                    <span>{{ isPwd ? 'Hide' : 'Show' }}</span>
+                  </q-tooltip>
+                </q-icon>
+              </template>
+            </q-input>
+          </div>
+          <div class="row q-gutter-md">
 
-          <q-btn color="primary" to="/user/tasks" v-model="properties.email" @click="handleSignIn">
+            <q-card-actions>
+              <q-btn color="primary" to="/user/tasks" v-model="properties.email" @click="handleSignIn">
 
-            <q-tooltip anchor="center right" self="center left" :offset="[10, 10]">Log In</q-tooltip>
-            Log In
+                <q-tooltip anchor="center right" self="center left" :offset="[10, 10]">Log In</q-tooltip>
+                Log In
 
-          </q-btn>
+              </q-btn>
 
-          <q-btn @click="handleRegister">
-            <q-tooltip anchor="center right" self="center left" :offset="[10, 10]">Log In</q-tooltip>
-            Sign Up
-          </q-btn>
+              <q-btn @click="handleRegister">
+                <q-tooltip anchor="center right" self="center left" :offset="[10, 10]">Log In</q-tooltip>
+                Sign Up
+              </q-btn>
+            </q-card-actions>
 
 
 
-        </div>
-        <div class="q-mt-md">
-          <a class="cursor-pointer  " @click="show = true">
-            <q-tooltip anchor="center right" self="center left" :offset="[10, 10]">Reset Password</q-tooltip>
-            Forgot Password?
-          </a>
-        </div>
+          </div>
+          <div class="q-mt-md">
+            <a class="cursor-pointer  " @click="show = true">
+              <q-tooltip anchor="center right" self="center left" :offset="[10, 10]">Reset Password</q-tooltip>
+              Forgot Password?
+            </a>
+          </div>
+        </q-card>
 
         <div>
           <q-dialog v-model="show">
