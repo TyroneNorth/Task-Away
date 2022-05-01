@@ -5,6 +5,8 @@ import Tasks from 'pages/Tasks.vue';
 import HelpPage from 'pages/HelpPage.vue';
 import SettingsPage from 'src/pages/auth/SettingsPage.vue';
 import IndexPage from 'src/pages/IndexPage.vue';
+import EmailConfirmation from 'src/pages/auth/EmailConfirmation.vue';
+import PasswordResetForm from 'src/pages/auth/PasswordResetForm.vue';
 import supabase from 'src/boot/supabase';
 
 const routes: RouteRecordRaw[] = [
@@ -16,6 +18,20 @@ const routes: RouteRecordRaw[] = [
       { path: '/help', component: HelpPage },
 
       { path: '', component: IndexPage },
+      { path: '/email-confirmation', component: EmailConfirmation },
+      {
+        path: '/forgot-password',
+        component: PasswordResetForm,
+        beforeEnter(to, from, next) {
+          supabase.auth.onAuthStateChange((user) => {
+            const currentUser = user;
+
+            if (currentUser) next();
+            else if (!currentUser) next('');
+            else next();
+          });
+        },
+      },
     ],
   },
 
@@ -33,17 +49,6 @@ const userRoutes: RouteRecordRaw[] = [
     component: UserLayout,
     meta: {
       requiresAuth: true,
-    },
-    beforeEnter(to, from, next) {
-      supabase.auth.onAuthStateChange((user) => {
-        const currentUser = user;
-        const requiresAuth = to.matched.some(
-          (record) => record.meta.requiresAuth
-        );
-        if (requiresAuth && !currentUser) next('');
-        else if (!requiresAuth && currentUser) next('/');
-        else next();
-      });
     },
 
     children: [

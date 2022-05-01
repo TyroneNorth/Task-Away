@@ -2,9 +2,9 @@
   <q-page class="q-pa-lg">
     <div>
 
-      <q-btn to="/">
+      <q-btn color="primary" label="log off" to="/">
         <q-tooltip anchor="center right" self="center left" :offset="[10, 10]">Sign Out</q-tooltip>
-        logOff
+
       </q-btn>
 
     </div>

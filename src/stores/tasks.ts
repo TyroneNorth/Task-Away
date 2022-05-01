@@ -163,13 +163,16 @@ export const useTaskStore = defineStore('tasks', {
         console.error('There was an error updating', error);
         return;
       }
-      // update local store by task id
-      this.tasks.forEach((t: Tasks) => {
-        if (t.task_id === id) {
-          t.title = task.title;
-          t.content = task.content;
-        }
-      });
+      // create new Task object to replace old one
+      const newTask = {
+        task_id: id,
+        title: data[0].title,
+        content: data[0].content,
+        // value does not chhange from previous value
+        is_completed: data[0].is_completed,
+      };
+      // replace old task with new task
+      this.tasks.splice(this.tasks.indexOf(task), 1, newTask);
 
       console.log(
         'Updated task',

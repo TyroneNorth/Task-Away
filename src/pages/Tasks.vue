@@ -181,7 +181,7 @@ function logID(task: Tasks) {
 
       <!--Tab Bar-->
       <q-btn @click="show = true" flat dense round side="left" color="primary" icon="add">
-        <q-tooltip class="bg-primary" anchor="center right" self="center left" :offset="[10, 10]">Add List</q-tooltip>
+        <q-tooltip class="bg-primary" anchor="center right" self="center left" :offset="[10, 10]">Add Task</q-tooltip>
       </q-btn>
       <!--TODO: Options Button
 
@@ -207,7 +207,7 @@ Options Button-->
 
 
 
-          <div class="col col-xs-12">
+          <div class="col col-md-3 col-xs-12">
             <q-item :class="{ 'true': task.is_completed }">
               <q-item-section>
                 <q-checkbox v-on:click="taskStore.updateTaskCompletion(task)" v-model="task.is_completed">
@@ -225,7 +225,7 @@ Options Button-->
 
 
 
-          <div class="col col-xs-12">
+          <div class="col col-md-8 col-xs-12">
             <q-item>
               <q-item-section clickable v-on:click="logID(task)" @click="show2 = true"
                 :class="{ 'true': task.is_completed }" class="cursor-pointer">
@@ -243,7 +243,7 @@ Options Button-->
             </q-item>
           </div>
 
-          <div class="col col-xs-12">
+          <div class="col col-md-1 col-xs-12 ">
             <q-item>
               <q-item-section :class="{ 'true': task.is_completed }">
                 <q-item-label id="removeTask">
@@ -324,6 +324,8 @@ Options Button-->
 
           </div>
 
+
+
         </q-list>
       </div>
 
@@ -342,6 +344,7 @@ Options Button-->
 
 </template>
 
+
 <style lang="scss">
 .no-task {
   opacity: 0.5;
@@ -351,16 +354,23 @@ Options Button-->
   margin: 10;
 }
 
+body.body--dark {
+  background-color: $dark;
+  color: #fff;
+}
 
 
-
+body {
+  font-family: 'Georgia', Times;
+}
 
 
 
 .true {
   .q-item__label {
     text-decoration: line-through;
-    color: rgb(129, 129, 129);
+    color: $primary;
+
   }
 }
 </style>

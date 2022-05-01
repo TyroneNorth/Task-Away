@@ -25,7 +25,7 @@
         </div>
         <div class="row q-gutter-md">
 
-          <q-btn to="/user/tasks" v-model="properties.email" @click="handleSignIn">
+          <q-btn color="primary" to="/user/tasks" v-model="properties.email" @click="handleSignIn">
 
             <q-tooltip anchor="center right" self="center left" :offset="[10, 10]">Log In</q-tooltip>
             Log In
@@ -37,9 +37,45 @@
             Sign Up
           </q-btn>
 
+
+
+        </div>
+        <div class="q-mt-md">
+          <q-link class="cursor-pointer " @click="show = true">
+            <q-tooltip anchor="center right" self="center left" :offset="[10, 10]">Reset Password</q-tooltip>
+            Forgot Password?
+          </q-link>
         </div>
 
-        <div class="q-mb-md">
+        <div>
+          <q-dialog v-model="show">
+            <q-card>
+              <q-card-section>
+                <div class="text-h6">Password Reset Link</div>
+              </q-card-section>
+
+              <q-card-section class="q-pt-none">
+                <q-form @submit="onSubmit" @reset="onReset" class="q-gutter-md">
+                  <q-input filled v-model="properties.email" label="Email" hint="Emial associated with account"
+                    lazy-rules :rules="[val => val && val.length > 0 || 'Cannot be blank!']" />
+
+
+
+
+
+                  <div>
+                    <q-btn @click="handleReset" label="Submit" type="submit" color="primary" />
+                    <q-btn label="Reset" type="reset" color="primary" flat class="q-ml-sm" />
+                  </div>
+                </q-form>
+              </q-card-section>
+
+              <q-card-actions align="left" class="text-primary">
+
+                <q-btn flat label="Close" v-close-popup />
+              </q-card-actions>
+            </q-card>
+          </q-dialog>
 
         </div>
 
@@ -55,6 +91,7 @@ import { reactive, ref } from 'vue';
 import { useUserStore } from 'src/stores/auth';
 import supabase from 'src/boot/supabase';
 
+const show = ref(false);
 const userStore = useUserStore();
 
 const user = reactive({
@@ -87,6 +124,23 @@ const handleSignIn = () => {
 
   userStore.handleLogin(properties);
 }
+
+const handleReset = () => {
+  userStore.handlePasswordReset(properties);
+}
+
+function onSubmit() {
+
+  show.value = false;
+  properties.email = '';
+
+}
+
+function onReset() {
+
+  properties.email = '';
+}
+
 
 
 

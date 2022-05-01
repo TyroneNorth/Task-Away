@@ -43,26 +43,21 @@ export const useUserStore = defineStore('auth', {
           email: credentials.email,
           password: credentials.password,
         });
-        Notify.create({
-          message: 'Successfully logged in!',
-          color: 'positive',
-          timeout: 2000,
-        });
+
         if (error) {
           Notify.create({
             message: error.message,
             color: 'negative',
             timeout: 5000,
           });
-        }
-        // No error throw, but no user detected so send magic link
-        if (!error && !user) {
+        } else {
           Notify.create({
-            message: 'Please check your email for a magic link',
+            message: 'Successfully logged in!',
             color: 'positive',
             timeout: 2000,
           });
         }
+
         console.log('user', user);
         // update store
         this.user = user;
@@ -83,20 +78,30 @@ export const useUserStore = defineStore('auth', {
         const { email, password } = credentials;
         // prompt user if they have not filled populated their credentials
         if (!email || !password) {
-          alert('Please provide both your email and password.');
+          Notify.create({
+            message: 'Please provide both your email and password.',
+            color: 'negative',
+            timeout: 5000,
+          });
           return;
         }
         const { error } = await supabase.auth.signUp({ email, password });
         if (error) {
-          alert(error.message);
+          Notify.create({
+            message: error.message,
+            color: 'negative',
+            timeout: 5000,
+          });
           console.error(error, error.message);
           return;
+        } else {
+          Notify.create({
+            message:
+              'Signup successful, confirmation mail should be sent soon!',
+            color: 'positive',
+            timeout: 2000,
+          });
         }
-        Notify.create({
-          message: 'Signup successful, confirmation mail should be sent soon!',
-          color: 'positive',
-          timeout: 2000,
-        });
       } catch (err) {
         alert('Fatal error signing up');
         console.error('signup error', err);
@@ -116,16 +121,26 @@ export const useUserStore = defineStore('auth', {
     /**
      * Handles password reset. Will send an email to the given email address.
      */
-    async handlePasswordReset() {
-      const email = prompt('Please enter your email:');
-      if (!email) {
+    async handlePasswordReset(credentials: Credentials) {
+      if (!credentials.email) {
         window.alert('Email address is required.');
       } else {
-        const { error } = await supabase.auth.api.resetPasswordForEmail(email);
+        const { error } = await supabase.auth.api.resetPasswordForEmail(
+          credentials.email
+        );
         if (error) {
-          alert('Error: ' + error.message);
+          Notify.create({
+            message: error.message,
+            color: 'negative',
+            timeout: 5000,
+          });
         } else {
-          alert('Password recovery email has been sent.');
+          Notify.create({
+            message:
+              'Password reset email sent, please check your email for instructions.',
+            color: 'positive',
+            timeout: 2000,
+          });
         }
       }
     },
