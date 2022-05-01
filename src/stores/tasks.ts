@@ -125,7 +125,7 @@ export const useTaskStore = defineStore('tasks', {
         this.tasks.push(task);
       });
 
-      console.log('created a new tasks');
+      console.log('created a new task');
       return data;
     },
 

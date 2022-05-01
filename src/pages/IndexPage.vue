@@ -112,6 +112,8 @@ const isPwd = ref(false);
 
 const handleRegister = () => {
   userStore.handleSignup(properties);
+
+
   //Create user data to profile
 
 

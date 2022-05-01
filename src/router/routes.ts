@@ -1,4 +1,4 @@
-import { RouteRecordRaw } from 'vue-router';
+import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
 import MainLayout from 'layouts/MainLayout.vue';
 import UserLayout from 'layouts/UserLayout.vue';
 import Tasks from 'pages/Tasks.vue';
@@ -17,19 +17,19 @@ const routes: RouteRecordRaw[] = [
     children: [
       { path: '/help', component: HelpPage },
 
-      { path: '', component: IndexPage },
+      { path: '', name: 'login', component: IndexPage },
       { path: '/email-confirmation', component: EmailConfirmation },
       {
         path: '/forgot-password',
         component: PasswordResetForm,
-        beforeEnter(to, from, next) {
-          supabase.auth.onAuthStateChange((user) => {
-            const currentUser = user;
-
-            if (currentUser) next();
-            else if (!currentUser) next('');
-            else next();
-          });
+        beforeEnter: (to) => {
+          // only allow navigation to reset password
+          // if we actually clicked a proper reset password link
+          // which provides the type=recovery hash key
+          if (!to.hash.includes('type=recovery')) {
+            if (supabase.auth.user()) return '/user/tasks';
+            return '';
+          }
         },
       },
     ],
@@ -39,6 +39,7 @@ const routes: RouteRecordRaw[] = [
   // but you can also remove it
   {
     path: '/:catchAll(.*)*',
+    name: 'not-found',
     component: () => import('pages/ErrorNotFound.vue'),
   },
 ];
@@ -47,19 +48,9 @@ const userRoutes: RouteRecordRaw[] = [
   {
     path: '/user',
     component: UserLayout,
+    name: 'home',
     meta: {
       requiresAuth: true,
-    },
-    beforeEnter(to, from, next) {
-      supabase.auth.onAuthStateChange((user) => {
-        const currentUser = user;
-        const requiresAuth = to.matched.some(
-          (record) => record.meta.requiresAuth
-        );
-        if (requiresAuth && !currentUser) next('');
-        else if (!requiresAuth && currentUser) next('/user');
-        else next();
-      });
     },
 
     children: [
@@ -81,5 +72,27 @@ const userRoutes: RouteRecordRaw[] = [
     ],
   },
 ];
+
+const router = createRouter({
+  history: createWebHistory(process.env.VITE_SUPABASE_URL),
+  routes: [...routes, ...userRoutes],
+});
+
+supabase.auth.onAuthStateChange((event) => {
+  console.log(event);
+  if (event == 'SIGNED_OUT') return router.push('');
+  if (event == 'SIGNED_IN') {
+    const routeName = router.currentRoute.value.name;
+    console.log('routeName', routeName);
+  }
+});
+
+router.beforeEach((to) => {
+  supabase.auth.onAuthStateChange((user) => {
+    if (!user) {
+      to.name = 'login';
+    }
+  });
+});
 
 export default routes.concat(userRoutes);

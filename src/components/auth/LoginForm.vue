@@ -23,14 +23,14 @@
     </div>
     <div class="row q-gutter-md">
 
-      <q-btn v-model="properties.email" @click="handleSignIn">
+      <q-btn>
 
         <q-tooltip anchor="center right" self="center left" :offset="[10, 10]">Log In</q-tooltip>
         Log In
 
       </q-btn>
 
-      <q-btn @click="handleRegister">
+      <q-btn>
         <q-tooltip anchor="center right" self="center left" :offset="[10, 10]">Log In</q-tooltip>
         Sign Up
       </q-btn>
@@ -63,9 +63,9 @@
 
 <script lang="ts">
 
-import { register } from 'src/auth/sb_add_new_user';
+
 import { reactive } from 'vue';
-import { login } from 'src/auth/sb_sign_in';
+
 
 const properties = reactive({
   email: '',
@@ -75,25 +75,9 @@ const properties = reactive({
 
 
 
-const handleRegister = () => {
-  register(properties.email, properties.password);
-  //Create user data to profile
 
 
 
-
-}
-
-
-const handleSignIn = () => {
-
-  login(properties.email, properties.password);
-
-
-
-}
-
-export default { handleSignIn, handleRegister }
 </script>
 
 
