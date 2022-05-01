@@ -41,10 +41,10 @@
 
         </div>
         <div class="q-mt-md">
-          <q-link class="cursor-pointer " @click="show = true">
+          <a class="cursor-pointer  " @click="show = true">
             <q-tooltip anchor="center right" self="center left" :offset="[10, 10]">Reset Password</q-tooltip>
             Forgot Password?
-          </q-link>
+          </a>
         </div>
 
         <div>
@@ -56,7 +56,7 @@
 
               <q-card-section class="q-pt-none">
                 <q-form @submit="onSubmit" @reset="onReset" class="q-gutter-md">
-                  <q-input filled v-model="properties.email" label="Email" hint="Emial associated with account"
+                  <q-input filled v-model="properties.email" label="Email" hint="Email associated with account"
                     lazy-rules :rules="[val => val && val.length > 0 || 'Cannot be blank!']" />
 
 

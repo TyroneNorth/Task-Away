@@ -50,6 +50,17 @@ const userRoutes: RouteRecordRaw[] = [
     meta: {
       requiresAuth: true,
     },
+    beforeEnter(to, from, next) {
+      supabase.auth.onAuthStateChange((user) => {
+        const currentUser = user;
+        const requiresAuth = to.matched.some(
+          (record) => record.meta.requiresAuth
+        );
+        if (requiresAuth && !currentUser) next('');
+        else if (!requiresAuth && currentUser) next('/user');
+        else next();
+      });
+    },
 
     children: [
       {

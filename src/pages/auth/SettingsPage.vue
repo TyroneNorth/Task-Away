@@ -30,11 +30,6 @@ ref(supabase.auth.onAuthStateChange(async (event) => {
 
 const $q = useQuasar()
 
-// get status
-console.log($q.dark.isActive) // true, false
-
-// get configured status
-console.log($q.dark.mode) // "auto", true, false
 
 
 watch(() => $q.dark.isActive, val => {

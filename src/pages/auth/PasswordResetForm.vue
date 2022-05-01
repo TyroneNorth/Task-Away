@@ -18,7 +18,6 @@ hash.split('&').forEach((item) => {
 });
 const resetToken = hashDictionary.access_token;
 
-const password = ref('');
 const loading = ref(false);
 const properties = reactive({
   email: '',
@@ -34,13 +33,13 @@ async function onSubmit() {
 }
 </script>
 <template>
-  <div>
-    <h2 class="mb- text-2xl font-bold">Reset Password</h2>
-    <p class="mb-4 text-sm text-slate-500">Choose a new password below</p>
-    <form class="flex w-full flex-col items-start" @submit.prevent="onSubmit">
-      <q-label>Password</q-label>
+  <div class="q-ma-lg">
+    <h2>Reset Password</h2>
+    <p>Choose a new password below</p>
+    <form class="flex w-full flex-col items-center" @submit.prevent="onSubmit">
+      <q-label class="q-mr-lg">Password</q-label>
 
-      <q-input v-model="properties.password" filled :type="properties.isPwd ? 'text' : 'password'">
+      <q-input class="q-mr-lg" v-model="properties.password" filled :type="properties.isPwd ? 'text' : 'password'">
         <template v-slot:append>
           <q-icon :name="properties.isPwd ? 'visibility' : 'visibility_off'" class="cursor-pointer"
             @click="properties.isPwd = !properties.isPwd">
@@ -51,7 +50,7 @@ async function onSubmit() {
         </template>
       </q-input>
 
-      <q-btn :loading="loading" type="submit" class="bg-teal-700">
+      <q-btn color="primary" :loading="loading" type="submit">
         Reset
       </q-btn>
     </form>

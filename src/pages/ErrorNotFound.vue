@@ -1,5 +1,5 @@
 <template>
-  <div class="fullscreen bg-blue text-white text-center q-pa-md flex flex-center">
+  <div class="fullscreen bg-primary text-white text-center q-pa-md flex flex-center">
     <div>
       <div style="font-size: 30vh">
         404
@@ -9,9 +9,9 @@
         Oops. Nothing here...
       </div>
 
-      <q-btn v-if="user.id" class="q-mt-xl" color="white" text-color="blue" unelevated to="/user/tasks" label="Go Home"
-        no-caps />
-      <q-btn v-else class="q-mt-xl" color="white" text-color="blue" unelevated to="/" label="Go Home" no-caps />
+      <q-btn v-if="user.id" class="q-mt-xl" color="white" text-color="primary" unelevated to="/user/tasks"
+        label="Go Home" no-caps />
+      <q-btn v-else class="q-mt-xl" color="white" text-color="primary" unelevated to="/" label="Go Home" no-caps />
     </div>
   </div>
 </template>
