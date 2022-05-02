@@ -3,7 +3,6 @@ import { useUserStore } from 'src/stores/auth';
 import { useRouter, useRoute } from 'vue-router';
 
 import { ref, reactive } from 'vue';
-const router = useRouter();
 const route = useRoute();
 /* Parse the route hash into a dictionary so we can pick out the access_token provided */
 const hashDictionary = {} as any;

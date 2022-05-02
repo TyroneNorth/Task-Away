@@ -1,4 +1,3 @@
-import supabase from 'src/boot/supabase';
 import { route } from 'quasar/wrappers';
 import {
   createMemoryHistory,
@@ -33,40 +32,6 @@ export default route(function (/* { store, ssrContext } */) {
     // quasar.conf.js -> build -> publicPath
     history: createHistory(process.env.VUE_ROUTER_BASE),
   });
-
-  const getCurrentUser = () =>
-    new Promise((resolve) => {
-      supabase.auth.onAuthStateChange((user) => {
-        resolve(user);
-      });
-
-      Router.beforeEach(async (to, from, next) => {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const user = await getCurrentUser();
-        if (to.matched.some((record) => record.meta.requiresAuth)) {
-          if (user) {
-            next('/tasks');
-          } else {
-            next('/');
-          }
-        } else if (to.matched.some((record) => record.meta.requiresNoAuth)) {
-          if (!user) {
-            next();
-          } else {
-            next('/');
-          }
-        } else if (to.matched.some((record) => record.meta.requiresVerify)) {
-          if (user) {
-            next();
-          } else {
-            next('/');
-          }
-        } else {
-          console.log('else');
-          next();
-        }
-      });
-    });
 
   return Router;
 });

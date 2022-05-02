@@ -13,6 +13,8 @@ export const useUserStore = defineStore('auth', {
     user: supabase.auth.user(),
     /** @type {unknown} */
     session: supabase.auth.session(),
+    /** @type {bool} */
+    is_loggedIn: false,
   }),
 
   getters: {
@@ -22,6 +24,10 @@ export const useUserStore = defineStore('auth', {
      */
     getUser() {
       this.user = supabase.auth.user();
+      if (this.user) {
+        this.is_loggedIn = true;
+      }
+      return;
     },
     /**
      * Retrieve the current session
@@ -29,6 +35,7 @@ export const useUserStore = defineStore('auth', {
      */
     getSession() {
       this.session = supabase.auth.session();
+      return;
     },
   },
 
@@ -75,17 +82,12 @@ export const useUserStore = defineStore('auth', {
      */
     async handleSignup(credentials: Credentials) {
       try {
-        const { email, password } = credentials;
         // prompt user if they have not filled populated their credentials
-        if (!email || !password) {
-          Notify.create({
-            message: 'Please provide both your email and password.',
-            color: 'negative',
-            timeout: 5000,
-          });
-          return;
-        }
-        const { error } = await supabase.auth.signUp({ email, password });
+
+        const { user, session, error } = await supabase.auth.signUp({
+          email: credentials.email,
+          password: credentials.password,
+        });
         if (error) {
           Notify.create({
             message: error.message,
@@ -102,6 +104,8 @@ export const useUserStore = defineStore('auth', {
             timeout: 2000,
           });
         }
+        this.user = user;
+        this.session = session;
       } catch (err) {
         alert('Fatal error signing up');
         console.error('signup error', err);

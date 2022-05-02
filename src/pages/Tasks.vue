@@ -1,10 +1,39 @@
 <script setup lang="ts">
-import { useQuasar } from 'quasar';
+import { Notify, useQuasar } from 'quasar';
 import { reactive, ref } from 'vue';
 import { useTaskStore } from 'src/stores/tasks';
 import { Tasks, } from 'src/components/models';
 import supabase from 'src/boot/supabase';
 
+// Need to check if user just singned in when coming for signed in page link
+const isLoggedIn = ref(false);
+console.log('Tasks1: ', isLoggedIn.value);
+supabase.auth.onAuthStateChange((event) => {
+  if (event === 'SIGNED_IN') {
+    isLoggedIn.value = true;
+    console.log('Tasks2: ', isLoggedIn.value);
+  } else {
+    isLoggedIn.value = false;
+    console.log('Tasks3: ', isLoggedIn.value);
+    Notify.create({
+      message: 'Logged Out, redirecting Home...',
+      color: 'primary',
+      position: 'top',
+      timeout: 3000,
+    });
+    //send user to task after 3 seconds
+    setTimeout(() => {
+      window.location.href = '/';
+    }, 3000);
+  }
+});
+
+if (supabase.auth.user()) {
+  isLoggedIn.value = true;
+  console.log('Tasks4: ', isLoggedIn.value);
+}
+
+// Second check sfor signed in user
 
 
 

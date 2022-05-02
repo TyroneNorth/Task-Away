@@ -22,13 +22,24 @@
 
 
 
-          <q-item to="/user/tasks" exact clickable v-ripple>
+          <q-item v-if="isLoggedIn" to="/user/tasks" exact clickable v-ripple>
             <q-item-section avatar>
               <q-icon name="task" />
             </q-item-section>
 
             <q-item-section>
               Tasks
+            </q-item-section>
+          </q-item>
+
+
+          <q-item v-else to="/" exact clickable v-ripple>
+            <q-item-section avatar>
+              <q-icon name="login" />
+            </q-item-section>
+
+            <q-item-section>
+              Login
             </q-item-section>
           </q-item>
 
@@ -73,9 +84,9 @@
 
 
       <router-view v-slot="{ Component }">
-        <keep-alive>
-          <Component :is="Component" />
-        </keep-alive>
+
+        <Component :is="Component" />
+
       </router-view>
 
     </q-page-container>
@@ -84,9 +95,17 @@
 
 <script setup lang="ts">
 import { date } from 'quasar';
-import { ref, reactive } from 'vue';
+import { ref, reactive, defineComponent } from 'vue';
 import supabase from 'src/boot/supabase';
 
+const isLoggedIn = ref(false);
+console.log('UserL1: ', isLoggedIn.value);
+supabase.auth.onAuthStateChange((event) => {
+  if (event === 'SIGNED_IN') {
+    isLoggedIn.value = true;
+    console.log('UserL2: ', isLoggedIn.value);
+  }
+});
 
 
 const user = reactive({
@@ -113,6 +132,19 @@ function todaysDate() {
 function toggleLeftDrawer() {
   leftDrawerOpen.value = !leftDrawerOpen.value;
 }
+
+defineComponent({
+  name: 'UserLayout',
+  setup() {
+    return {
+      user,
+      leftDrawerOpen,
+      todaysDate,
+      toggleLeftDrawer,
+    }
+  },
+});
+
 
 </script>
 

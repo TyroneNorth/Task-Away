@@ -1,17 +1,20 @@
 <template>
   <q-page class="q-pa-lg">
     <q-btn icon="dark_mode" @click="$q.dark.toggle">
-      <q-tooltip anchor="center right" self="center left" :offset="[10, 10]">Ttoggle Theme</q-tooltip>
+      <q-tooltip anchor="center right" self="center left" :offset="[10, 10]">Toggle Theme</q-tooltip>
     </q-btn>
     <div class="justify-center">
       <h5 class="q-mt-none">Settings</h5>
-      <signout-btn @click="logOff" />
+      <q-btn color="primary" @click="logOff" label="log off" to="/">
+        <q-tooltip anchor="center right" self="center left" :offset="[10, 10]">Sign Out</q-tooltip>
+
+      </q-btn>
+
     </div>
   </q-page>
 </template>
 
 <script setup lang="ts">
-import SignoutBtn from 'src/components/auth/SignoutBtn.vue';
 import { logOff } from 'src/auth/sb_log_off';
 import supabase from 'src/boot/supabase';
 import { ref, watch } from 'vue';
@@ -25,6 +28,7 @@ const taskStore = ref(useTaskStore());
 ref(supabase.auth.onAuthStateChange(async (event) => {
   if (event === 'SIGNED_OUT') {
     taskStore.value.$reset()
+    console.log('signed out user, store reset')
   }
 }));
 

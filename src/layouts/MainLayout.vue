@@ -1,5 +1,6 @@
-<template>
-  <q-layout view="lHh Lpr lFf">
+<template  >
+
+  <q-layout v-if="!isLoggedIn" view="lHh Lpr lFf">
     <q-header q-ml-200>
       <q-toolbar>
         <q-btn flat dense round icon="menu" aria-label="Menu" @click="toggleLeftDrawer" />
@@ -10,6 +11,9 @@
       </div>
       <q-img src="../static/mountains.png" class="header-image absolute-top" />
     </q-header>
+
+
+
 
     <q-drawer v-model="leftDrawerOpen" show-if-above bordered :width="250" :breakpoint="600">
       <q-scroll-area style="
@@ -59,31 +63,33 @@
       </q-img>
     </q-drawer>
 
-    <q-page-container v-if="!supabase.auth.user()">
+    <q-page-container>
+
       <h3 class="q-ma-md">Welcome to the Task Away app!</h3>
 
 
       <router-view v-slot="{ Component }">
-        <keep-alive>
-          <Component :is="Component" />
-        </keep-alive>
+
+        <Component :is="Component" />
+
       </router-view>
 
     </q-page-container>
 
-    <q-page-container v-else>
-      <h3 class="q-ma-md">Welcome to the Task Away app!</h3>
 
 
-      <router-view v-slot="{ Component }">
-        <keep-alive>
-          <Component :is="Component" />
-        </keep-alive>
-      </router-view>
-
-    </q-page-container>
   </q-layout>
+
+
+
+
+
+
+
+
 </template>
+
+
 
 <script setup lang="ts">
 import { date } from 'quasar';
@@ -91,8 +97,16 @@ import { ref } from 'vue';
 
 //import stores from 'src/stores/auth/';
 import supabase from 'src/boot/supabase';
-
-
+import { useUserStore } from 'src/stores/auth';
+var email = ref();
+const isLoggedIn = ref(false);
+console.log('Main: ', isLoggedIn.value);
+if (supabase.auth.user()) {
+  isLoggedIn.value = true;
+  console.log('Main2: ', isLoggedIn.value);
+  email.value = useUserStore().$state.user?.email;
+}
+console.log('Main3: ', isLoggedIn.value);
 
 
 

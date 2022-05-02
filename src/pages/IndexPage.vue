@@ -34,8 +34,8 @@
 
               </q-btn>
 
-              <q-btn @click="handleRegister">
-                <q-tooltip anchor="center right" self="center left" :offset="[10, 10]">Log In</q-tooltip>
+              <q-btn to="/register">
+                <q-tooltip anchor="center right" self="center left" :offset="[10, 10]">Register</q-tooltip>
                 Sign Up
               </q-btn>
             </q-card-actions>
@@ -114,16 +114,6 @@ const isPwd = ref(false);
 
 
 
-const handleRegister = () => {
-  userStore.handleSignup(properties);
-
-
-  //Create user data to profile
-
-
-
-
-}
 
 
 const handleSignIn = () => {

@@ -9,22 +9,22 @@
         Oops. Nothing here...
       </div>
 
-      <q-btn v-if="user.id" class="q-mt-xl" color="white" text-color="primary" unelevated to="/user/tasks"
+      <q-btn v-if="!supabase.auth.session()" class="q-mt-xl" color="white" text-color="primary" unelevated to="/"
         label="Go Home" no-caps />
-      <q-btn v-else class="q-mt-xl" color="white" text-color="primary" unelevated to="/" label="Go Home" no-caps />
+      <q-btn v-else class="q-mt-xl" color="white" text-color="primary" unelevated to="/user/settings" label="Go Home"
+        no-caps />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { defineComponent, reactive } from 'vue';
+import { defineComponent, onMounted } from 'vue';
 import supabase from 'src/boot/supabase';
 
 
-const user = reactive({
-  id: supabase.auth.user()?.id,
-  email: supabase.auth.user()?.email,
-})
+onMounted(() => {
+  console.log('supabase', supabase.auth.user(), '2', supabase.auth.session());
+});
 defineComponent({
   name: 'ErrorNotFound'
 });
