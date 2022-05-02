@@ -5,7 +5,7 @@ import { useTaskStore } from 'src/stores/tasks';
 import { Tasks, } from 'src/components/models';
 import supabase from 'src/boot/supabase';
 
-// Need to check if user just singned in when coming for signed in page link
+// Need to check if user just singned in when coming for signed in page button link
 const isLoggedIn = ref(false);
 console.log('Tasks1: ', isLoggedIn.value);
 supabase.auth.onAuthStateChange((event) => {
