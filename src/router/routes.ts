@@ -9,10 +9,7 @@ import EmailConfirmation from 'src/pages/auth/EmailConfirmation.vue';
 import PasswordResetForm from 'src/pages/auth/PasswordResetForm.vue';
 import SignUpPage from 'src/pages/auth/SignUpPage.vue';
 import supabase from 'src/boot/supabase';
-import { Notify, QSpinnerBall } from 'quasar';
-import { ref } from 'vue';
-import loginCallback from 'src/pages/IndexPage.vue';
-import { myFunction2 } from 'src/components/models';
+import { Notify } from 'quasar';
 
 const routes: RouteRecordRaw[] = [
   {
@@ -86,7 +83,7 @@ const userRoutes: RouteRecordRaw[] = [
           ) {
             next();
           } else if (
-            !supabase.auth.onAuthStateChange((event, session) => {
+            supabase.auth.onAuthStateChange(() => {
               Notify.create({
                 message: 'You must be logged in to access this page',
                 color: 'negative',

@@ -36,11 +36,4 @@ declare interface User {
   tasks?: Tasks[];
 }
 
-declare interface myFunction {
-  (user: User): void;
-}
-declare interface myFunction2 {
-  (): void;
-}
-
-export type { Credentials, Tasks, Identity, User, myFunction, myFunction2 };
+export type { Credentials, Tasks, Identity, User };

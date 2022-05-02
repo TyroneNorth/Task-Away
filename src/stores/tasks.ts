@@ -155,7 +155,7 @@ export const useTaskStore = defineStore('tasks', {
      * Targets a specific task via its record id and updates the task description.
      *
      */
-    async updateTask(task: Tasks) {
+    async updateTask(task: Tasks, id: Tasks['task_id']) {
       const { data, error } = await supabase
         .from('tasks')
         .update({ title: task.title, content: task.content })
@@ -166,12 +166,11 @@ export const useTaskStore = defineStore('tasks', {
         console.error('There was an error updating', error);
         return;
       }
-      // create new Task object to replace old one
-      this.tasks.splice(
-        this.tasks.findIndex((t) => t.task_id === task.task_id),
-        1,
-        task
-      );
+      // create new Task object to replace old one via id
+      data.forEach((task) => {
+        const index = this.tasks.findIndex((t) => t.task_id === id);
+        this.tasks.splice(index, 1, task);
+      });
       // replace old task with new task
 
       console.log(

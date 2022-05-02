@@ -2,7 +2,7 @@
 import { useQuasar } from 'quasar';
 import { reactive, ref } from 'vue';
 import { useTaskStore } from 'src/stores/tasks';
-import { Tasks, } from 'src/components/models';
+import { Tasks, Car } from 'src/components/models';
 import supabase from 'src/boot/supabase';
 
 
@@ -57,10 +57,9 @@ const display = reactive({
 
 
 function onSubmit() {
-  addNovelTask(tempTask.value.title, tempTask.value.content);
+
   display.show = false;
-  newTaskProps.newTask.content = '';
-  newTaskProps.newTask.title = '';
+
 }
 
 function onReset() {
@@ -69,8 +68,9 @@ function onReset() {
 }
 
 function onSubmitUpdate() {
-  updateNovelTask(tempTask.value);
 
+  tempTask.value.title = '';
+  tempTask.value.content = '';
   display.show2 = false;
   //wait 2 seconds
 
@@ -140,10 +140,9 @@ async function addNovelTask(title: string, content: string) {
 
 
 
+async function updateNovelTask(task: Tasks, id: Tasks['task_id']) {
 
-async function updateNovelTask(task: Tasks) {
-
-  await taskStore.value.updateTask(task);
+  await taskStore.value.updateTask(task, id);
 
 
   $q.notify({
@@ -287,7 +286,8 @@ Options Button-->
 
 
                   <div>
-                    <q-btn label="Submit" type="submit" color="primary" />
+                    <q-btn @click="updateNovelTask(tempTask, tempTask.task_id)" label="Submit" type="submit"
+                      color="primary" />
                     <q-btn label="Reset" type="reset" color="primary" flat class="q-ml-sm" />
                   </div>
                 </q-form>
@@ -311,8 +311,7 @@ Options Button-->
 
               <q-card-section class="q-pt-none">
                 <q-form @submit="onSubmit" @reset="onReset" class="q-gutter-md">
-                  <q-input filled v-model="newTaskProps.newTask.title" label="Task title" hint="Name of new task"
-                    lazy-rules :rules="[val => val && val.length > 0 || 'Cannot be blank!']" />
+                  <q-input filled v-model="newTaskProps.newTask.title" label="Task title" hint="Name of new task" />
 
                   <q-input type="textarea" filled v-model="newTaskProps.newTask.content" label="Description" />
 
