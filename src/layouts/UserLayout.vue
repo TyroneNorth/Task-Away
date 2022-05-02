@@ -154,7 +154,7 @@ defineComponent({
 .header-image {
   height: 100%;
   z-index: -1;
-  opacity: 0.2;
+  opacity: 0.6;
   filter: grayscale(100%);
 }
 
