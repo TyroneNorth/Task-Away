@@ -1,39 +1,33 @@
 <script setup lang="ts">
-import { Notify, useQuasar } from 'quasar';
+import { useQuasar } from 'quasar';
 import { reactive, ref } from 'vue';
 import { useTaskStore } from 'src/stores/tasks';
 import { Tasks, } from 'src/components/models';
 import supabase from 'src/boot/supabase';
 
-// Need to check if user just singned in when coming for signed in page button link
-const isLoggedIn = ref(false);
-console.log('Tasks1: ', isLoggedIn.value);
-supabase.auth.onAuthStateChange((event) => {
+
+ref(supabase.auth.onAuthStateChange(async (event) => {
   if (event === 'SIGNED_IN') {
-    isLoggedIn.value = true;
-    console.log('Tasks2: ', isLoggedIn.value);
-  } else {
-    isLoggedIn.value = false;
-    console.log('Tasks3: ', isLoggedIn.value);
-    Notify.create({
-      message: 'Logged Out, redirecting Home...',
-      color: 'primary',
-      position: 'top',
-      timeout: 3000,
+
+    user.id = supabase.auth.user()?.id;
+    user.email = supabase.auth.user()?.email;
+    const { data: tasks } = await supabase
+      .from('tasks')
+      .select('*')
+      .order('task_id');
+
+    taskStore.value.$reset()
+    tasks?.forEach((task) => {
+      //taskStores.taskStore.push(task);
+      taskStore.value.tasks.push(task);
     });
-    //send user to task after 3 seconds
-    setTimeout(() => {
-      window.location.href = '/';
-    }, 3000);
+
+
   }
-});
+}));
 
-if (supabase.auth.user()) {
-  isLoggedIn.value = true;
-  console.log('Tasks4: ', isLoggedIn.value);
-}
 
-// Second check sfor signed in user
+
 
 
 
@@ -45,30 +39,10 @@ const user = reactive({
   email: supabase.auth.user()?.email,
 });
 
-ref(supabase.auth.onAuthStateChange(async (event) => {
-  console.log(event);
-  if (event === 'SIGNED_IN') {
-    user.id = supabase.auth.user()?.id;
-    user.email = supabase.auth.user()?.email;
-    const { data: tasks } = await supabase
-      .from('tasks')
-      .select('*')
-      .order('task_id');
 
-    console.log('task', tasks)
-    taskStore.value.$reset()
-    tasks?.forEach((task) => {
-      //taskStores.taskStore.push(task);
-      taskStore.value.tasks.push(task);
-    });
+const tempTask = ref(<Tasks>{});
 
 
-  }
-}));
-
-const updateProps = reactive({
-  task: <Tasks>{},
-})
 
 const newTaskProps = reactive({
   newTask: <Tasks>{},
@@ -83,10 +57,8 @@ const display = reactive({
 
 
 function onSubmit() {
-  console.log('onSubmit');
+  addNovelTask(tempTask.value.title, tempTask.value.content);
   display.show = false;
-  updateProps.task.title = newTaskProps.newTask.title;
-  updateProps.task.content = newTaskProps.newTask.content;
   newTaskProps.newTask.content = '';
   newTaskProps.newTask.title = '';
 }
@@ -97,8 +69,8 @@ function onReset() {
 }
 
 function onSubmitUpdate() {
-  console.log('firing onSubmitUpdate');
-  console.log(updateProps, updateNovelTask(updateProps.task, updateProps.task.task_id));
+  updateNovelTask(tempTask.value);
+
   display.show2 = false;
   //wait 2 seconds
 
@@ -107,9 +79,9 @@ function onSubmitUpdate() {
 }
 
 function onResetUpdate() {
-  var temp = updateProps.task;
-  updateProps.task.title = '';
-  updateProps.task.content = '';
+  var temp = tempTask;
+  tempTask.value.title = '';
+  tempTask.value.content = '';
   return temp;
 }
 
@@ -147,7 +119,7 @@ async function addNovelTask(title: string, content: string) {
 
   taskStore.value.addTasks(title, content);
 
-  console.log(title, content);
+
   $q.notify({
     message: 'Task Added',
     color: 'positive',
@@ -156,10 +128,10 @@ async function addNovelTask(title: string, content: string) {
 
 
   if ({ title, content } === null || { title, content } === undefined) {
-    console.log('data is null');
+
   }
   else {
-    console.log('payload is loaded');
+
   }
 
   taskStore.value.fetchTasks;
@@ -169,9 +141,9 @@ async function addNovelTask(title: string, content: string) {
 
 
 
-async function updateNovelTask(task: Tasks, id: number) {
+async function updateNovelTask(task: Tasks) {
 
-  await taskStore.value.updateTask(task, id);
+  await taskStore.value.updateTask(task);
 
 
   $q.notify({
@@ -181,10 +153,10 @@ async function updateNovelTask(task: Tasks, id: number) {
   })
 
   if (task === null || task === undefined) {
-    console.log('payload is /null/undefined');
+
   }
   else {
-    console.log('payload is loaded');
+
   }
 }
 
@@ -193,8 +165,8 @@ async function updateNovelTask(task: Tasks, id: number) {
  * @param task
  */
 function logID(task: Tasks) {
-  console.log(task.task_id);
-  updateProps.task.task_id = task.task_id;
+
+  return tempTask.value.task_id = task.task_id;
 }
 
 
@@ -308,9 +280,9 @@ Options Button-->
 
               <q-card-section class="q-pt-none">
                 <q-form @submit="onSubmitUpdate" @reset="onResetUpdate" class="q-gutter-md">
-                  <q-input filled v-model="updateProps.task.title" label="Task title" />
+                  <q-input filled v-model="tempTask.title" label="Task title" />
 
-                  <q-input type="textarea" filled v-model="updateProps.task.content" label="Description" />
+                  <q-input type="textarea" filled v-model="tempTask.content" label="Description" />
 
 
 

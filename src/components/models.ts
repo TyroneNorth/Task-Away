@@ -6,10 +6,41 @@ declare interface Credentials {
 }
 
 declare interface Tasks {
-  task_id: number;
+  task_id?: number;
   title: string;
   content: string;
-  is_completed: boolean;
+  is_completed?: boolean;
 }
 
-export type { Credentials, Tasks };
+declare interface Identity {
+  created_at?: unknown;
+  id?: string;
+  identity_data?: { sub: string };
+  last_sign_in_at?: unknown;
+  provider?: string;
+  updated_at?: unknown;
+  user_id?: string;
+}
+declare interface User {
+  id?: string;
+  aud?: string;
+  email?: string;
+  full_name?: string;
+  role?: string;
+  email_confirmed_at?: unknown;
+  phone?: string;
+  confirmed_at?: unknown;
+  last_sign_in_at?: unknown;
+  identities?: Identity[];
+  updated_at?: unknown;
+  tasks?: Tasks[];
+}
+
+declare interface myFunction {
+  (user: User): void;
+}
+declare interface myFunction2 {
+  (): void;
+}
+
+export type { Credentials, Tasks, Identity, User, myFunction, myFunction2 };

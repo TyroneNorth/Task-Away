@@ -19,7 +19,7 @@ import { logOff } from 'src/auth/sb_log_off';
 import supabase from 'src/boot/supabase';
 import { ref, watch } from 'vue';
 import { useTaskStore } from 'src/stores/tasks';
-import { useQuasar } from 'quasar';
+import { Notify, useQuasar } from 'quasar';
 
 const taskStore = ref(useTaskStore());
 
@@ -28,7 +28,12 @@ const taskStore = ref(useTaskStore());
 ref(supabase.auth.onAuthStateChange(async (event) => {
   if (event === 'SIGNED_OUT') {
     taskStore.value.$reset()
-    console.log('signed out user, store reset')
+    Notify.create({
+      message: 'You have been signed out',
+      color: 'negative',
+      position: 'top',
+      timeout: 3000
+    });
   }
 }));
 

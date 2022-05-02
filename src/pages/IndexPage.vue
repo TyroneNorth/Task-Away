@@ -27,7 +27,7 @@
           <div class="row q-gutter-md">
 
             <q-card-actions>
-              <q-btn color="primary" to="/user/tasks" v-model="properties.email" @click="handleSignIn">
+              <q-btn to="/user/tasks" color="primary" v-model="properties.email" @click="handleSignIn">
 
                 <q-tooltip anchor="center right" self="center left" :offset="[10, 10]">Log In</q-tooltip>
                 Log In
@@ -90,7 +90,6 @@
 
 <script setup lang="ts">
 import SettingsPage from './auth/SettingsPage.vue';
-
 import { reactive, ref } from 'vue';
 import { useUserStore } from 'src/stores/auth';
 import supabase from 'src/boot/supabase';
@@ -119,11 +118,19 @@ const isPwd = ref(false);
 const handleSignIn = () => {
 
   userStore.handleLogin(properties);
+
+
+
+  //window.location.href = '/user/tasks';
 }
 
 const handleReset = () => {
   userStore.handlePasswordReset(properties);
 }
+
+
+
+
 
 function onSubmit() {
 

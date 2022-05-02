@@ -1,10 +1,11 @@
 <script lang="ts" setup>
 import { useUserStore } from 'src/stores/auth';
-import { useRouter, useRoute } from 'vue-router';
+import { useRoute } from 'vue-router';
 
 import { ref, reactive } from 'vue';
 const route = useRoute();
 /* Parse the route hash into a dictionary so we can pick out the access_token provided */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const hashDictionary = {} as any;
 // first remove the actual '#' character
 const hash = route.hash.replace('#', '');
@@ -15,7 +16,7 @@ hash.split('&').forEach((item) => {
   // add to results
   hashDictionary[key] = value;
 });
-const resetToken = hashDictionary.access_token;
+
 
 const loading = ref(false);
 const properties = reactive({

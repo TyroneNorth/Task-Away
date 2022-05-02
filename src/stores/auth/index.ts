@@ -2,7 +2,7 @@
 import supabase from 'src/boot/supabase';
 import { Session, Provider } from '@supabase/gotrue-js/dist/main/lib/types';
 import { defineStore } from 'pinia';
-import { Credentials } from 'src/components/models';
+import { Credentials, User } from 'src/components/models';
 import { ref } from 'vue';
 import { Notify } from 'quasar';
 export const userSession = ref<Session | null>(null);
@@ -10,33 +10,39 @@ export const userSession = ref<Session | null>(null);
 export const useUserStore = defineStore('auth', {
   state: () => ({
     /** @type {unknown} */
-    user: supabase.auth.user(),
+    user: ref(<User>{}),
     /** @type {unknown} */
-    session: supabase.auth.session(),
+    //session: ref(<Session>{}),
     /** @type {bool} */
-    is_loggedIn: false,
+    is_loggedIn: ref(false),
   }),
 
   getters: {
     /**
-     * Retrieve the current user
+     * Retrieve the current user from supabase await the response
      * @returns {unknown}
      */
     getUser() {
-      this.user = supabase.auth.user();
-      if (this.user) {
+      const temp = supabase.auth.user();
+      //map user data to our user model
+      if (temp) {
         this.is_loggedIn = true;
+        this.user = {
+          id: temp.id,
+          email: temp.email,
+          role: temp.role,
+          email_confirmed_at: temp.email_confirmed_at,
+          phone: temp.phone,
+          confirmed_at: temp.confirmed_at,
+          last_sign_in_at: temp.last_sign_in_at,
+          updated_at: temp.updated_at,
+        };
       }
-      return;
     },
     /**
      * Retrieve the current session
      * @returns {unknown}
      */
-    getSession() {
-      this.session = supabase.auth.session();
-      return;
-    },
   },
 
   actions: {
@@ -46,7 +52,7 @@ export const useUserStore = defineStore('auth', {
      */
     async handleLogin(credentials: Credentials) {
       try {
-        const { error, user, session } = await supabase.auth.signIn({
+        const { error, user } = await supabase.auth.signIn({
           email: credentials.email,
           password: credentials.password,
         });
@@ -67,14 +73,22 @@ export const useUserStore = defineStore('auth', {
 
         console.log('user', user);
         // update store
-        this.user = user;
-        this.session = session;
+        this.is_loggedIn = true;
+        this.user = {
+          id: user?.id,
+          email: user?.email,
+          role: user?.role,
+          email_confirmed_at: user?.email_confirmed_at,
+          phone: user?.phone,
+          confirmed_at: user?.confirmed_at,
+          last_sign_in_at: user?.last_sign_in_at,
+          updated_at: user?.updated_at,
+        };
       } catch (error) {
         console.error('Error thrown:', error);
         alert(error);
         return error;
       }
-      return this.user;
     },
 
     /*
@@ -84,7 +98,7 @@ export const useUserStore = defineStore('auth', {
       try {
         // prompt user if they have not filled populated their credentials
 
-        const { user, session, error } = await supabase.auth.signUp({
+        const { user, error } = await supabase.auth.signUp({
           email: credentials.email,
           password: credentials.password,
         });
@@ -104,8 +118,17 @@ export const useUserStore = defineStore('auth', {
             timeout: 2000,
           });
         }
-        this.user = user;
-        this.session = session;
+        this.is_loggedIn = true;
+        this.user = {
+          id: user?.id,
+          email: user?.email,
+          role: user?.role,
+          email_confirmed_at: user?.email_confirmed_at,
+          phone: user?.phone,
+          confirmed_at: user?.confirmed_at,
+          last_sign_in_at: user?.last_sign_in_at,
+          updated_at: user?.updated_at,
+        };
       } catch (err) {
         alert('Fatal error signing up');
         console.error('signup error', err);
@@ -118,8 +141,19 @@ export const useUserStore = defineStore('auth', {
      *
      */
     async handleOAuthLogin(provider: Provider) {
-      const { error } = await supabase.auth.signIn({ provider });
+      const { user, error } = await supabase.auth.signIn({ provider });
       if (error) console.error('Error: ', error.message);
+      else this.is_loggedIn = true;
+      this.user = {
+        id: user?.id,
+        email: user?.email,
+        role: user?.role,
+        email_confirmed_at: user?.email_confirmed_at,
+        phone: user?.phone,
+        confirmed_at: user?.confirmed_at,
+        last_sign_in_at: user?.last_sign_in_at,
+        updated_at: user?.updated_at,
+      };
     },
 
     /**
@@ -155,8 +189,11 @@ export const useUserStore = defineStore('auth', {
         if (error) {
           alert('Error updating user info: ' + error.message);
         } else {
+          this.user = {
+            email: credentials.email,
+          };
           alert('Successfully updated user info!');
-          window.location.href = '/';
+          window.location.href = '/settings';
         }
       } catch (error) {
         alert('Error updating user info: ' + error);
@@ -179,7 +216,7 @@ export const useUserStore = defineStore('auth', {
           console.error('Error', error);
           return;
         }
-
+        this.is_loggedIn = false;
         Notify.create({
           message: 'Successfully logged out!',
           color: 'positive',

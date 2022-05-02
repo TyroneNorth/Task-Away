@@ -9,7 +9,10 @@ import EmailConfirmation from 'src/pages/auth/EmailConfirmation.vue';
 import PasswordResetForm from 'src/pages/auth/PasswordResetForm.vue';
 import SignUpPage from 'src/pages/auth/SignUpPage.vue';
 import supabase from 'src/boot/supabase';
-import { Notify } from 'quasar';
+import { Notify, QSpinnerBall } from 'quasar';
+import { ref } from 'vue';
+import loginCallback from 'src/pages/IndexPage.vue';
+import { myFunction2 } from 'src/components/models';
 
 const routes: RouteRecordRaw[] = [
   {
@@ -72,6 +75,29 @@ const userRoutes: RouteRecordRaw[] = [
         name: 'tasks',
         component: Tasks,
         meta: { requiresAuth: true },
+        beforeEnter: (to, from, next) => {
+          if (
+            supabase.auth.onAuthStateChange((event, session) => {
+              if (session) {
+                console.log('event', event);
+                console.log('session', session);
+              }
+            })
+          ) {
+            next();
+          } else if (
+            !supabase.auth.onAuthStateChange((event, session) => {
+              Notify.create({
+                message: 'You must be logged in to access this page',
+                color: 'negative',
+                timeout: 5000,
+              });
+              next('/');
+            })
+          ) {
+            next();
+          }
+        },
       },
       {
         path: '/email-confirmation',

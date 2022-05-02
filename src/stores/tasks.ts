@@ -34,6 +34,7 @@ export const useTaskStore = defineStore('tasks', {
         }
         // store response to tasks
         this.tasks = tasks;
+        this.meta.totalCount = tasks.length;
         console.log('got tasks!', tasks);
         return tasks;
       } catch (err) {
@@ -121,9 +122,11 @@ export const useTaskStore = defineStore('tasks', {
         console.error('There was an error inserting', error);
       }
       // store response to tasks
-      data?.forEach((task: Tasks) => {
+      data?.forEach((task) => {
         this.tasks.push(task);
       });
+
+      this.meta.totalCount = this.tasks.length;
 
       console.log('created a new task');
       return data;
@@ -152,11 +155,11 @@ export const useTaskStore = defineStore('tasks', {
      * Targets a specific task via its record id and updates the task description.
      *
      */
-    async updateTask(task: Tasks, id: number) {
+    async updateTask(task: Tasks) {
       const { data, error } = await supabase
         .from('tasks')
         .update({ title: task.title, content: task.content })
-        .eq('task_id', id);
+        .eq('task_id', task.task_id);
 
       if (error) {
         alert(error.message);
@@ -164,15 +167,12 @@ export const useTaskStore = defineStore('tasks', {
         return;
       }
       // create new Task object to replace old one
-      const newTask = {
-        task_id: id,
-        title: data[0].title,
-        content: data[0].content,
-        // value does not chhange from previous value
-        is_completed: data[0].is_completed,
-      };
+      this.tasks.splice(
+        this.tasks.findIndex((t) => t.task_id === task.task_id),
+        1,
+        task
+      );
       // replace old task with new task
-      this.tasks.splice(this.tasks.indexOf(task), 1, newTask);
 
       console.log(
         'Updated task',
@@ -197,6 +197,7 @@ export const useTaskStore = defineStore('tasks', {
         this.tasks.findIndex((t) => t.task_id === task.task_id),
         1
       );
+      this.meta.totalCount = this.tasks.length;
 
       if (error) {
         alert(error.message);

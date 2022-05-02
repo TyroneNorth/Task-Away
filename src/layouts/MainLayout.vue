@@ -1,6 +1,6 @@
 <template  >
 
-  <q-layout v-if="!isLoggedIn" view="lHh Lpr lFf">
+  <q-layout view="lHh Lpr lFf">
     <q-header q-ml-200>
       <q-toolbar>
         <q-btn flat dense round icon="menu" aria-label="Menu" @click="toggleLeftDrawer" />
